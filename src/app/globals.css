@@ -1,0 +1,441 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   Design tokens
+
+   Light values sit on `:root`; the dark block is the only other place a
+   colour is defined. Components consume the generated Tailwind utilities or
+   the component classes below — never a raw hex value.
+   ========================================================================== */
+
+:root {
+  --background: #f7f7fb;
+  --foreground: #0f0f14;
+  --muted: #55555f;
+
+  /* Glass surfaces */
+  --surface: rgba(255, 255, 255, 0.66);
+  --surface-strong: rgba(255, 255, 255, 0.82);
+  --surface-border: rgba(255, 255, 255, 0.75);
+  --rule: rgba(15, 15, 20, 0.08);
+
+  /* Accents, also used for the backdrop blobs and gradient text */
+  --accent: #4f46e5;
+  --accent-2: #0284c7;
+  --accent-3: #9333ea;
+
+  --shadow-card:
+    0 1px 2px rgba(15, 15, 20, 0.04), 0 8px 24px -12px rgba(15, 15, 20, 0.16);
+  --shadow-card-hover:
+    0 1px 2px rgba(15, 15, 20, 0.05), 0 20px 44px -18px rgba(79, 70, 229, 0.35);
+
+  --mesh-opacity: 0.5;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #07070c;
+    --foreground: #f0f0f5;
+    --muted: #9d9daa;
+
+    --surface: rgba(255, 255, 255, 0.045);
+    --surface-strong: rgba(255, 255, 255, 0.07);
+    --surface-border: rgba(255, 255, 255, 0.1);
+    --rule: rgba(255, 255, 255, 0.09);
+
+    --accent: #8b8cf9;
+    --accent-2: #38bdf8;
+    --accent-3: #c084fc;
+
+    --shadow-card:
+      0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 32px -14px rgba(0, 0, 0, 0.7);
+    --shadow-card-hover:
+      0 1px 2px rgba(0, 0, 0, 0.4), 0 24px 52px -20px rgba(139, 140, 249, 0.45);
+
+    --mesh-opacity: 0.42;
+  }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-rule: var(--rule);
+  --color-accent: var(--accent);
+
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ==========================================================================
+   Gradient mesh backdrop
+
+   Three soft radial blobs on a fixed layer behind everything, drifting on
+   long offset cycles so the movement never reads as a loop. Pure CSS — no
+   canvas, no JS, no layout cost.
+   ========================================================================== */
+
+.mesh {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.mesh-blob {
+  position: absolute;
+  border-radius: 9999px;
+  opacity: var(--mesh-opacity);
+  filter: blur(72px);
+  will-change: transform;
+}
+
+.mesh-blob-1 {
+  top: -14rem;
+  left: -10rem;
+  width: 42rem;
+  height: 42rem;
+  background: radial-gradient(circle, var(--accent) 0%, transparent 68%);
+  animation: drift-1 26s ease-in-out infinite alternate;
+}
+
+.mesh-blob-2 {
+  top: 8rem;
+  right: -16rem;
+  width: 38rem;
+  height: 38rem;
+  background: radial-gradient(circle, var(--accent-2) 0%, transparent 68%);
+  animation: drift-2 31s ease-in-out infinite alternate;
+}
+
+.mesh-blob-3 {
+  bottom: -18rem;
+  left: 22%;
+  width: 40rem;
+  height: 40rem;
+  background: radial-gradient(circle, var(--accent-3) 0%, transparent 68%);
+  animation: drift-3 37s ease-in-out infinite alternate;
+}
+
+@keyframes drift-1 {
+  to {
+    transform: translate3d(7rem, 4rem, 0) scale(1.12);
+  }
+}
+
+@keyframes drift-2 {
+  to {
+    transform: translate3d(-6rem, 6rem, 0) scale(0.9);
+  }
+}
+
+@keyframes drift-3 {
+  to {
+    transform: translate3d(5rem, -5rem, 0) scale(1.08);
+  }
+}
+
+/* ==========================================================================
+   Components
+   ========================================================================== */
+
+.glass {
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  border-radius: 1rem;
+  box-shadow: var(--shadow-card);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+}
+
+.glass-hover {
+  transition:
+    box-shadow 0.35s ease,
+    transform 0.35s ease,
+    background-color 0.35s ease;
+}
+
+.glass-hover:hover {
+  background: var(--surface-strong);
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-2px);
+}
+
+/*
+ * Gradient-filled type. `color` is set first so the text is still readable if
+ * `background-clip: text` is unsupported; the @supports block only then makes
+ * it transparent.
+ */
+.gradient-text {
+  color: var(--foreground);
+}
+
+@supports (background-clip: text) or (-webkit-background-clip: text) {
+  .gradient-text {
+    background-image: linear-gradient(
+      100deg,
+      var(--accent-3) 0%,
+      var(--accent) 42%,
+      var(--accent-2) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
+
+.pill {
+  display: inline-block;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.78rem;
+  line-height: 1.1rem;
+  color: var(--muted);
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 9999px;
+  transition:
+    color 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.pill:hover {
+  color: var(--foreground);
+  border-color: var(--accent);
+}
+
+/* ==========================================================================
+   Skill cloud
+
+   Two layouts for one set of elements. The default is an ordinary wrapped
+   list of pills — that is what renders without JavaScript, and what a
+   visitor who prefers reduced motion keeps. `SkillCloud` adds `.is-3d` only
+   once it has taken over positioning, at which point the same `li` elements
+   become absolutely positioned points on a rotating sphere.
+   ========================================================================== */
+
+.skill-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.skill-cloud.is-3d {
+  position: relative;
+  display: block;
+  height: 22rem;
+  /* A word swinging wide must never widen the page. */
+  overflow: hidden;
+  perspective: 620px;
+  transform-style: preserve-3d;
+}
+
+@media (min-width: 640px) {
+  .skill-cloud.is-3d {
+    height: 28rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .skill-cloud.is-3d {
+    height: 32rem;
+  }
+}
+
+.skill-cloud.is-3d .skill-cloud-item {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  padding: 0;
+  white-space: nowrap;
+  background: none;
+  border: none;
+  border-radius: 0;
+  /* Centres each word on its own point. `translate` is applied before
+     `transform`, so it composes with the matrix written by the animation. */
+  translate: -50% -50%;
+  will-change: transform, opacity;
+}
+
+.skill-cloud-item[data-weight="1"] {
+  font-size: 0.75rem;
+}
+
+.skill-cloud-item[data-weight="2"] {
+  font-size: 0.9rem;
+}
+
+.skill-cloud.is-3d .skill-cloud-item[data-weight="3"] {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.skill-cloud.is-3d .skill-cloud-item:hover {
+  color: var(--foreground);
+  text-shadow: 0 0 22px color-mix(in srgb, var(--accent) 65%, transparent);
+}
+
+/* ==========================================================================
+   Cursor glow
+
+   A single fixed layer that follows the pointer across the whole page. Only
+   painted once `CursorGlow` has confirmed a fine pointer and no reduced
+   motion preference, which is what `.has-cursor-glow` on the root signals.
+   ========================================================================== */
+
+.cursor-glow {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  display: none;
+  pointer-events: none;
+  background: radial-gradient(
+    420px circle at var(--cursor-x, 50%) var(--cursor-y, 50%),
+    color-mix(in srgb, var(--accent) 13%, transparent),
+    transparent 68%
+  );
+}
+
+.has-cursor-glow .cursor-glow {
+  display: block;
+}
+
+/* ==========================================================================
+   Spotlight cards and link buttons
+   ========================================================================== */
+
+.spotlight {
+  position: relative;
+  overflow: hidden;
+}
+
+.spotlight::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  background: radial-gradient(
+    260px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+    color-mix(in srgb, var(--accent) 28%, transparent),
+    transparent 72%
+  );
+}
+
+.spotlight:hover::before {
+  opacity: 1;
+}
+
+/*
+ * The tracked border. A gradient filling the whole card, masked down to just
+ * the 1px ring: paint the padding-box and the border-box, then subtract one
+ * from the other so only the edge survives.
+ */
+.spotlight::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  padding: 1px;
+  border-radius: inherit;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  background: radial-gradient(
+    320px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+    var(--accent),
+    transparent 62%
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+.spotlight:hover::after {
+  opacity: 1;
+}
+
+/* Keeps card content above the highlight rather than beneath it. */
+.spotlight > * {
+  position: relative;
+  z-index: 1;
+}
+
+.link-button-arrow {
+  opacity: 0.35;
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+
+.link-button:hover .link-button-arrow,
+.link-button:focus-visible .link-button-arrow {
+  opacity: 1;
+  transform: translateX(2px);
+}
+
+/* ==========================================================================
+   Scroll reveal
+
+   The hiding rule is scoped to `.js`, a class added by an inline script in
+   the document body. With JS unavailable the class is never added and every
+   section renders visible — the animation is an enhancement, never a
+   prerequisite for reading the page.
+   ========================================================================== */
+
+.js [data-reveal] {
+  opacity: 0;
+  transform: translateY(18px);
+}
+
+.js [data-reveal][data-visible="true"] {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .js [data-reveal] {
+    opacity: 1;
+    transform: none;
+  }
+}
