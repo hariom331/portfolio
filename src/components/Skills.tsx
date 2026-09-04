@@ -3,14 +3,6 @@ import { Section } from "@/components/Section";
 import { SpotlightCard } from "@/components/SpotlightCard";
 import { site } from "@/content/site";
 
-/**
- * The stack, grouped by what each tool is for.
- *
- * Names and relative prominence only — no proficiency bars. A self-assigned
- * "Java 90%" is unfalsifiable and reads as junior. The daily-driver tools
- * (weight 3) are drawn in the accent colour so a skim lands on those first,
- * and everything else stays quiet.
- */
 export function Skills() {
   if (site.stack.length === 0) return null;
 

@@ -3,20 +3,12 @@ import type { ReactNode } from "react";
 import { Reveal } from "@/components/Reveal";
 
 interface SectionProps {
-  /** Also the nav target and the source of the heading's id. */
   readonly id: string;
   readonly title: string;
-  /** One muted line under the heading. Optional — most sections need none. */
   readonly lead?: string;
   readonly children: ReactNode;
 }
 
-/**
- * A titled page section.
- *
- * `scroll-mt-24` is what keeps a nav jump from parking the heading behind the
- * sticky bar; it has to sit on the element the hash actually targets.
- */
 export function Section({ id, title, lead, children }: SectionProps) {
   const headingId = `${id}-heading`;
 

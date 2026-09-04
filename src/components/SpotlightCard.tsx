@@ -8,16 +8,8 @@ interface SpotlightCardProps {
   readonly className?: string;
 }
 
-/**
- * A glass card with a soft highlight that tracks the cursor.
- *
- * Position is published as two CSS custom properties and consumed by a
- * `radial-gradient` overlay, so the only per-move work is writing two strings
- * — no React render, no layout read beyond the one `getBoundingClientRect`.
- *
- * Pointer events cover mouse, pen and touch; on touch there is no hover state
- * so the highlight simply never shows, which is the right outcome.
- */
+// Position goes out as CSS custom properties, so a move costs two writes
+// and no render.
 export function SpotlightCard({
   children,
   className = "",

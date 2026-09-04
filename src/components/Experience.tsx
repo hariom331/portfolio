@@ -3,15 +3,6 @@ import { Section } from "@/components/Section";
 import { SpotlightCard } from "@/components/SpotlightCard";
 import { site } from "@/content/site";
 
-/**
- * Not a resume clone — the PDF is linked in the hero and stays canonical.
- *
- * Laid out as a row per role with the dates in a left gutter from `sm` up,
- * which is how a reader scans a work history: down the dates first, then
- * across into whichever role they stopped on. On a phone the gutter becomes a
- * line above the title instead, because a 9rem column next to text is not a
- * column any more.
- */
 export function Experience() {
   return (
     <Section id="experience" title="Work experience">

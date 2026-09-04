@@ -10,10 +10,7 @@ interface NavItem {
   readonly label: string;
 }
 
-/**
- * Ids must match the `id` each section renders, or the link scrolls nowhere
- * and the scroll-spy never lights up.
- */
+// Ids must match the id each section renders.
 const SECTIONS: readonly NavItem[] = [
   { id: "about", label: "About" },
   { id: "skills", label: "Skills" },
@@ -22,7 +19,6 @@ const SECTIONS: readonly NavItem[] = [
   { id: "contact", label: "Contact" },
 ];
 
-/** First letter of each word: "Hariom Joshi" becomes "HJ". */
 function initials(name: string): string {
   return name
     .split(" ")
@@ -30,26 +26,13 @@ function initials(name: string): string {
     .join("");
 }
 
-/**
- * The sticky top bar: brand, section links, theme control.
- *
- * Links are plain hash anchors, so they work before hydration and without
- * JavaScript at all — the scroll-spy below only decorates them. Sections
- * carry `scroll-margin-top` in `globals.css` so a jump does not land the
- * heading underneath this bar.
- *
- * Below `md` the links collapse into a disclosure panel. It is a plain
- * expanding block rather than a full-screen overlay: the page is short, and
- * an overlay that traps focus is a lot of machinery for five links.
- */
 export function Navbar() {
   const [active, setActive] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
 
-  // Highlights whichever section occupies the middle band of the viewport.
-  // The negative `rootMargin` collapses the observation area to a strip
-  // around the vertical centre, which avoids the usual bug where a tall
-  // section and a short one both count as visible and the marker flickers.
+  // The negative rootMargin narrows the observation area to a strip at the
+  // vertical centre, so a tall and a short section cannot both count as
+  // visible and flicker the marker.
   useEffect(() => {
     if (typeof IntersectionObserver === "undefined") return;
 
@@ -70,7 +53,6 @@ export function Navbar() {
     return () => observer.disconnect();
   }, []);
 
-  // Escape closes the panel, matching every other disclosure on the web.
   useEffect(() => {
     if (!open) return;
 
@@ -82,8 +64,7 @@ export function Navbar() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [open]);
 
-  // Widening past the breakpoint reveals the desktop links, at which point a
-  // panel left open would be a second copy of them stuck under the bar.
+  // Past the breakpoint the desktop links are back, so close the panel.
   useEffect(() => {
     if (!open) return;
 
@@ -104,9 +85,6 @@ export function Navbar() {
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center gap-4 px-5 sm:px-8">
         <a href="#top" className="group flex items-center gap-2.5 font-medium">
           <span className="nav-monogram">{initials(site.name)}</span>
-          {/* Measured: name, five links and the theme control come to 557px of
-              the 753px available at `md`, so nothing has to give way. Hidden
-              below `sm` only because the monogram alone reads better there. */}
           <span className="hidden text-sm tracking-tight sm:inline">
             {site.name}
           </span>
@@ -139,8 +117,7 @@ export function Navbar() {
             onClick={() => setOpen((wasOpen) => !wasOpen)}
             className="nav-icon-button inline-flex shrink-0 items-center justify-center md:hidden"
           >
-            {/* Two bars that cross into an X. One element per bar so the
-                transform is a plain rotate rather than a path morph. */}
+            {/* One element per bar, so the transform is a plain rotate. */}
             <span aria-hidden="true" className="nav-burger">
               <span className={open ? "translate-y-[3px] rotate-45" : ""} />
               <span className={open ? "-translate-y-[3px] -rotate-45" : ""} />

@@ -6,22 +6,14 @@ type Theme = "light" | "dark";
 
 const STORAGE_KEY = "theme";
 
-/** Local subscribers, so a click in this tab updates the control immediately. */
 const listeners = new Set<() => void>();
 
 function notify() {
   for (const listener of listeners) listener();
 }
 
-/**
- * The theme actually being painted right now.
- *
- * An explicit choice is recorded as `data-theme` on the root element by
- * `write` below, and re-applied before first paint by the boot script in the
- * layout. With no choice recorded the page follows the OS, so that is what
- * the control has to report — the visitor never picks "system", they simply
- * have not overridden it yet.
- */
+// With no explicit choice recorded the page follows the OS, so that is what
+// the control reports.
 function read(): Theme {
   const attribute = document.documentElement.getAttribute("data-theme");
   if (attribute === "light" || attribute === "dark") return attribute;
@@ -37,8 +29,7 @@ function write(theme: Theme) {
   try {
     localStorage.setItem(STORAGE_KEY, theme);
   } catch {
-    // Private mode or blocked storage. The choice still applies to this page,
-    // it just will not survive a reload. Not worth surfacing to the visitor.
+    // Blocked storage. The choice still applies, it just will not survive a reload.
   }
 
   notify();
@@ -47,11 +38,10 @@ function write(theme: Theme) {
 function subscribe(onChange: () => void) {
   listeners.add(onChange);
 
-  // `storage` fires in *other* tabs, keeping them in sync with this one.
+  // Fires in other tabs, keeping them in sync.
   window.addEventListener("storage", onChange);
 
-  // While no explicit choice is stored the page tracks the OS, so a sunset
-  // switch has to move this control too.
+  // Track the OS while nothing is stored.
   const query = window.matchMedia("(prefers-color-scheme: dark)");
   query.addEventListener("change", onChange);
 
@@ -62,24 +52,12 @@ function subscribe(onChange: () => void) {
   };
 }
 
-/** The server cannot know the OS preference, so it assumes the light default. */
 function serverSnapshot(): Theme {
   return "light";
 }
 
-/**
- * Light/dark switch.
- *
- * Two states only, as asked. Nothing is stored until the visitor clicks, so
- * the default is whatever the OS reports and a first-time visitor at night
- * gets a dark page without touching anything.
- *
- * The value lives on the root element and in `localStorage`, not in React, so
- * it is read through `useSyncExternalStore` — the supported way to render a
- * client-only value. React hydrates with the server snapshot and re-renders
- * with the real one. The theme itself is applied before first paint by the
- * boot script in the layout; this control only reflects and changes it.
- */
+// The value lives on the root element and in localStorage rather than in
+// React, hence useSyncExternalStore.
 export function ThemeToggle() {
   const theme = useSyncExternalStore(subscribe, read, serverSnapshot);
   const next: Theme = theme === "dark" ? "light" : "dark";
@@ -92,9 +70,7 @@ export function ThemeToggle() {
       title={`Switch to ${next} theme`}
       className="nav-icon-button inline-flex shrink-0 items-center justify-center"
     >
-      {/* Both glyphs ship; CSS shows whichever matches the active theme, so
-          the icon is correct on the very first paint — before this component
-          has hydrated and learned what the theme is. */}
+      {/* Both ship; CSS picks one, so the first paint is already correct. */}
       <svg
         viewBox="0 0 24 24"
         width="17"

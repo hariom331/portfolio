@@ -1,9 +1,6 @@
 import { site } from "@/content/site";
 
-/**
- * The year is evaluated at build time — this is a static export, so it moves
- * when the site is rebuilt, not when the visitor's clock rolls over.
- */
+// Build time, not the visitor's clock: this is a static export.
 export function Footer() {
   const year = new Date().getFullYear();
 

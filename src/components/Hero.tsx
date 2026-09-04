@@ -3,21 +3,11 @@ import Image from "next/image";
 import { LinkList } from "@/components/LinkList";
 import { site } from "@/content/site";
 
-/**
- * Name, role and links on the left; the right half is deliberately empty for
- * now, held open for whatever ends up standing there.
- *
- * The text column is capped at `max-w-2xl`, so the copy does not stretch into
- * the gap and the layout will not have to be rearranged when something fills
- * it. Setting `site.photo` drops a portrait straight into the slot: above the
- * name below `md`, which is the right order for a face, and beside it above.
- */
 export function Hero() {
   return (
     <section
       id="top"
       aria-labelledby="hero-name"
-      // `scroll-mt-24` clears the sticky bar when the brand link jumps here.
       className="flex scroll-mt-24 flex-col gap-10 md:flex-row md:items-center md:justify-between md:gap-14"
     >
       <div className="order-2 max-w-2xl md:order-1">

@@ -4,18 +4,10 @@ import { Section } from "@/components/Section";
 import { SpotlightCard } from "@/components/SpotlightCard";
 import { site } from "@/content/site";
 
-/**
- * Personal projects, one card each.
- *
- * Every card ends in a button row. Artefacts that do not exist yet still get
- * a chip, marked "soon" and inert — the card shows what is coming without
- * handing anyone a dead link.
- */
 export function Projects() {
   if (site.projects.length === 0) return null;
 
-  // A single project in a two-column grid leaves a conspicuous empty cell, so
-  // it takes the full width instead.
+  // One project in a two-column grid leaves an empty cell.
   const columns = site.projects.length > 1 ? "md:grid-cols-2" : "";
 
   return (
@@ -41,8 +33,6 @@ export function Projects() {
               </p>
 
               {project.links.length > 0 ? (
-                // `mt-auto` pins the button row to the bottom so cards of
-                // different text lengths still line up.
                 <div className="mt-auto pt-6">
                   <LinkList
                     links={project.links}

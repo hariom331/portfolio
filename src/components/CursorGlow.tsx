@@ -2,17 +2,6 @@
 
 import { useEffect } from "react";
 
-/**
- * A soft glow that follows the cursor across the whole page.
- *
- * Position is published as two custom properties on `<html>` and consumed by
- * a fixed gradient layer in CSS, so a mouse move costs two property writes
- * and no React render.
- *
- * Only mounts its listener for a fine pointer that is not asking for reduced
- * motion — on touch there is no cursor to follow, and the effect is pure
- * decoration nobody should have forced on them.
- */
 export function CursorGlow() {
   useEffect(() => {
     const finePointer = window.matchMedia("(pointer: fine)").matches;
@@ -34,7 +23,7 @@ export function CursorGlow() {
       root.style.setProperty("--cursor-y", `${lastY}px`);
     };
 
-    // Coalesce to one write per frame; pointermove can fire far more often.
+    // One write per frame; pointermove fires far more often than that.
     const onPointerMove = (event: PointerEvent) => {
       lastX = event.clientX;
       lastY = event.clientY;

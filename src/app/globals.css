@@ -2,17 +2,9 @@
 
 /* ==========================================================================
    Design tokens
-
-   Light values sit on `:root`; the dark block is the only other place a
-   colour is defined. Components consume the generated Tailwind utilities or
-   the component classes below — never a raw hex value.
    ========================================================================== */
 
-/*
- * Palette values are defined once, here, as light-* / dark-* pairs. The three
- * blocks below only *map* them onto the active token names — so a colour is
- * never written twice and the two themes cannot drift apart.
- */
+/* Defined once as light-* / dark-* pairs, then mapped onto the active names. */
 :root {
   --light-background: #f7f7fb;
   --light-foreground: #0f0f14;
@@ -64,7 +56,7 @@
   color-scheme: light;
 }
 
-/* System preference, unless the visitor has explicitly chosen light. */
+/* System preference, unless light was explicitly chosen. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --background: var(--dark-background);
@@ -119,11 +111,8 @@
    Base
    ========================================================================== */
 
-/*
- * Every nav link is a hash jump, so the scroll is animated rather than
- * instant. Sections carry `scroll-mt-24` to clear the sticky bar; the
- * reduced-motion block at the foot of this file turns the animation off.
- */
+/* Nav links are hash jumps, so the scroll is animated. Turned off in the
+   reduced-motion block at the foot of this file. */
 html {
   scroll-behavior: smooth;
 }
@@ -142,10 +131,6 @@ body {
 
 /* ==========================================================================
    Gradient mesh backdrop
-
-   Three soft radial blobs on a fixed layer behind everything, drifting on
-   long offset cycles so the movement never reads as a loop. Pure CSS — no
-   canvas, no JS, no layout cost.
    ========================================================================== */
 
 .mesh {
@@ -209,16 +194,8 @@ body {
   }
 }
 
-/*
- * Everything below is a component class, wrapped in the `components` layer.
- *
- * Layers are what settle the cascade against Tailwind: an unlayered rule beats
- * every layered one, so `.glass { border-radius: 1rem }` sitting outside a
- * layer silently defeats a `rounded-full` utility on the same element, and
- * `.nav-icon-button { display: inline-flex }` defeats `md:hidden`. Inside
- * `components` — which Tailwind orders before `utilities` — a utility in the
- * markup always wins, which is the direction anyone reading the JSX expects.
- */
+/* Wrapped in the components layer so utilities in the markup still win. An
+   unlayered .glass rule would silently beat rounded-full on the same element. */
 @layer components {
   /* ==========================================================================
    Components
@@ -245,11 +222,7 @@ body {
     transform: translateY(-2px);
   }
 
-  /*
- * Gradient-filled type. `color` is set first so the text is still readable if
- * `background-clip: text` is unsupported; the @supports block only then makes
- * it transparent.
- */
+  /* color is set first so the text survives without background-clip. */
   .gradient-text {
     color: var(--foreground);
   }
@@ -291,7 +264,7 @@ body {
     font-family: var(--font-mono), ui-monospace, monospace;
     font-size: 0.72rem;
     letter-spacing: 0.04em;
-    /* White on a saturated gradient in both themes — not a token colour. */
+    /* White on a saturated gradient in both themes, so not a token. */
     color: #fff;
     background-image: linear-gradient(
       135deg,
@@ -323,11 +296,8 @@ body {
     color: var(--foreground);
   }
 
-  /*
- * The scroll-spy marker. Scoped to the desktop bar: below `md` these links
- * are full-width rows in the disclosure panel, where a short centred
- * underline would read as an underlined word rather than a marker.
- */
+  /* Desktop only: in the mobile panel a short underline would read as an
+     underlined word rather than a marker. */
   @media (min-width: 768px) {
     .nav-link.is-active::after {
       content: "";
@@ -361,8 +331,7 @@ body {
     border-color: color-mix(in srgb, var(--accent) 45%, transparent);
   }
 
-  /* Two bars that rotate into an X. Separate elements so each transform is a
-   plain rotate, rather than one path morphing into another. */
+  /* Separate elements, so each transform is a plain rotate. */
   .nav-burger {
     position: relative;
     display: block;
@@ -377,8 +346,8 @@ body {
     height: 1.5px;
     background: currentColor;
     border-radius: 9999px;
-    /* Tailwind writes `rotate` and `translate` as individual properties, so
-     transitioning `transform` alone would animate nothing. */
+    /* Tailwind writes rotate and translate as individual properties, so
+       transitioning transform alone would animate nothing. */
     transition:
       rotate 0.25s ease,
       translate 0.25s ease;
@@ -392,12 +361,8 @@ body {
     bottom: 2px;
   }
 
-  /*
- * The theme icon is chosen in CSS, not in React: the control cannot know the
- * OS preference until it hydrates, and a sun that flips to a moon a moment
- * after load is exactly the flash the boot script exists to prevent. Each
- * theme shows the icon for the theme the button switches *to*.
- */
+  /* Chosen in CSS, not React, so the first paint is correct. Each theme
+     shows the icon for the theme the button switches to. */
   .theme-icon-sun {
     display: none;
   }
@@ -422,10 +387,6 @@ body {
 
   /* ==========================================================================
    Hero frame
-
-   The portrait slot, sized so the hero row keeps its shape at every
-   breakpoint. Nothing stands in it while `site.photo` is null: the hero
-   leaves that half of the row empty rather than filling it with a stand-in.
    ========================================================================== */
 
   .photo-frame {
@@ -534,11 +495,7 @@ body {
     color: color-mix(in srgb, var(--muted) 65%, transparent);
   }
 
-  /*
- * Replaces the global focus ring on inputs rather than adding to it: a soft
- * inner glow on a rounded field reads better than a detached outline, and two
- * rings at once look like a bug.
- */
+  /* Replaces the global focus ring rather than adding a second one. */
   .field:focus-visible {
     outline: none;
     border-color: var(--accent);
@@ -564,7 +521,7 @@ body {
     border-color: var(--accent);
   }
 
-  /* A daily-driver tool. Weight 3 in the content file. */
+  /* Weight 3 in the content file. */
   .pill-core {
     font-weight: 500;
     color: var(--accent);
@@ -580,9 +537,7 @@ body {
   /* ==========================================================================
    Cursor glow
 
-   A single fixed layer that follows the pointer across the whole page. Only
-   painted once `CursorGlow` has confirmed a fine pointer and no reduced
-   motion preference, which is what `.has-cursor-glow` on the root signals.
+   Painted only once .has-cursor-glow is on the root.
    ========================================================================== */
 
   .cursor-glow {
@@ -631,11 +586,8 @@ body {
     opacity: 1;
   }
 
-  /*
- * The tracked border. A gradient filling the whole card, masked down to just
- * the 1px ring: paint the padding-box and the border-box, then subtract one
- * from the other so only the edge survives.
- */
+  /* Gradient over the whole card, masked down to the 1px ring: paint the
+     padding-box and border-box, then subtract one from the other. */
   .spotlight::after {
     content: "";
     position: absolute;
@@ -671,11 +623,8 @@ body {
     z-index: 1;
   }
 
-  /*
- * A link button for an artefact that does not exist yet. Dashed and dimmed so
- * it never reads as clickable — it is a `span`, so there is nothing to click
- * and nothing to tab to either.
- */
+  /* Dashed and dimmed so it does not read as clickable. It is a span, so
+     there is nothing to click or tab to. */
   .link-pending {
     color: var(--muted);
     background: var(--surface);
@@ -709,10 +658,7 @@ body {
 /* ==========================================================================
    Scroll reveal
 
-   The hiding rule is scoped to `.js`, a class added by an inline script in
-   the document body. With JS unavailable the class is never added and every
-   section renders visible — the animation is an enhancement, never a
-   prerequisite for reading the page.
+   Scoped to .js, so without JavaScript every section renders visible.
    ========================================================================== */
 
 .js [data-reveal] {

@@ -40,10 +40,6 @@ export const metadata: Metadata = {
   },
 };
 
-/**
- * schema.org Person, so search results and anything else reading structured
- * data get the same facts the page states.
- */
 const personJsonLd = {
   "@context": "https://schema.org",
   "@type": "Person",
@@ -60,17 +56,8 @@ const personJsonLd = {
     .filter((href) => href.startsWith("https://")),
 };
 
-/**
- * Runs before first paint. Two jobs:
- *
- * 1. Mark the document JavaScript-capable, which gates the scroll-reveal
- *    hiding rule in `globals.css`. Without JS the class is never set and
- *    every section renders visible.
- * 2. Apply any stored theme choice. This has to happen before paint or the
- *    page flashes the system theme first — the classic flash of wrong theme.
- *    It is wrapped in try/catch because reading localStorage throws outright
- *    in some privacy configurations.
- */
+// Adds the js class that gates scroll-reveal, and applies the stored theme
+// before paint so the page does not flash the wrong one.
 const bootScript = `(function(){
   var r = document.documentElement;
   r.classList.add("js");
@@ -89,13 +76,10 @@ export default function RootLayout({ children }: RootLayoutProps) {
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-      // The inline script below adds a `js` class before React hydrates, so the
-      // server and client class lists differ by design. Scoped to this element
-      // only — children are still checked normally.
+      // The boot script edits this element's class list before hydration.
       suppressHydrationWarning
     >
       <head>
-        {/* Inline and synchronous on purpose: it must run before first paint. */}
         <script dangerouslySetInnerHTML={{ __html: bootScript }} />
       </head>
       <body className="flex min-h-full flex-col">
@@ -111,7 +95,6 @@ export default function RootLayout({ children }: RootLayoutProps) {
         {children}
         <script
           type="application/ld+json"
-          // Serialised from a literal above, so there is no untrusted input here.
           dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
         />
       </body>

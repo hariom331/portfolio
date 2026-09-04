@@ -9,27 +9,16 @@ import { site } from "@/content/site";
 
 type Status = "idle" | "composed" | "copied";
 
-/** Keeps the composed `mailto:` well inside what mail clients accept. */
+// Keeps the composed mailto well inside what mail clients accept.
 const MESSAGE_MAX = 1200;
 
-/**
- * The closing section: an invitation, the address, and a form.
- *
- * The site is a static export — there is no server to POST to — so the form
- * composes a `mailto:` and hands it to the visitor's own mail client. That is
- * a deliberate trade: nothing is silently swallowed by a backend that does
- * not exist, and the sender keeps a copy in their own sent folder. The
- * address is also shown in full for anyone who would rather write directly.
- *
- * To switch to a real endpoint later (Formspree, Web3Forms, a Lambda), swap
- * the body of `handleSubmit` for a `fetch` — the markup does not change.
- */
+// Static export, so there is no endpoint to POST to. The form composes a
+// mailto and hands it to the visitor's own mail client. To move to a real
+// endpoint, swap the body of handleSubmit for a fetch.
 export function Contact() {
   const [status, setStatus] = useState<Status>("idle");
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    // Native validation has already passed by the time this fires — the
-    // browser will not submit an invalid form.
     event.preventDefault();
 
     const data = new FormData(event.currentTarget);
@@ -40,8 +29,7 @@ export function Contact() {
     const subject = `Portfolio message from ${name}`;
     const body = `${message}\n\n— ${name}\nReply to: ${email}`;
 
-    // `encodeURIComponent` on both parts: an unescaped newline or ampersand
-    // in the body would otherwise truncate the mail at that character.
+    // An unescaped newline or ampersand would truncate the mail there.
     window.location.href =
       `mailto:${site.email}` +
       `?subject=${encodeURIComponent(subject)}` +
@@ -55,8 +43,7 @@ export function Contact() {
       await navigator.clipboard.writeText(site.email);
       setStatus("copied");
     } catch {
-      // Blocked clipboard or an insecure origin. The address is on screen
-      // right next to the button, so there is nothing to recover from.
+      // Blocked clipboard. The address is on screen next to the button.
     }
   };
 
@@ -90,7 +77,6 @@ export function Contact() {
               Copy address
             </button>
 
-            {/* `aria-live` so the confirmation is announced, not just seen. */}
             <span aria-live="polite" className="text-muted text-xs">
               {status === "copied" ? "Copied to clipboard" : ""}
             </span>

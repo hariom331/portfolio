@@ -5,22 +5,12 @@ import type { ReactNode } from "react";
 
 interface RevealProps {
   readonly children: ReactNode;
-  /** Stagger, in milliseconds, applied as a transition delay. */
   readonly delay?: number;
   readonly className?: string;
 }
 
-/**
- * Fades and lifts its children the first time they scroll into view.
- *
- * The visible flag is written straight to the DOM node rather than held in
- * React state: this is a one-way handoff to the CSS transition, and routing
- * it through state would re-render the subtree for a purely visual change.
- *
- * Observes once and then disconnects — there is no exit animation, and
- * re-animating on scroll-back is a well-known irritation. The matching CSS is
- * scoped to `.js`, so without JavaScript the content is simply visible.
- */
+// Writes the flag to the DOM instead of React state: it only drives a CSS
+// transition, so a re-render would be wasted work.
 export function Reveal({ children, delay = 0, className }: RevealProps) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -32,7 +22,7 @@ export function Reveal({ children, delay = 0, className }: RevealProps) {
       node.dataset.visible = "true";
     };
 
-    // Older engines without IntersectionObserver just get the content.
+    // No IntersectionObserver: just show it.
     if (typeof IntersectionObserver === "undefined") {
       show();
       return;
