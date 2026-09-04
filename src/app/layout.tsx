@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 
 import { CursorGlow } from "@/components/CursorGlow";
 import { GradientBackdrop } from "@/components/GradientBackdrop";
+import { Navbar } from "@/components/Navbar";
 import { site } from "@/content/site";
 
 import "./globals.css";
@@ -60,11 +61,24 @@ const personJsonLd = {
 };
 
 /**
- * Marks the document as JavaScript-capable before first paint, which is what
- * gates the scroll-reveal hiding rule in `globals.css`. Without JS the class
- * is never set and every section renders visible.
+ * Runs before first paint. Two jobs:
+ *
+ * 1. Mark the document JavaScript-capable, which gates the scroll-reveal
+ *    hiding rule in `globals.css`. Without JS the class is never set and
+ *    every section renders visible.
+ * 2. Apply any stored theme choice. This has to happen before paint or the
+ *    page flashes the system theme first — the classic flash of wrong theme.
+ *    It is wrapped in try/catch because reading localStorage throws outright
+ *    in some privacy configurations.
  */
-const jsFlagScript = `document.documentElement.classList.add("js")`;
+const bootScript = `(function(){
+  var r = document.documentElement;
+  r.classList.add("js");
+  try {
+    var t = localStorage.getItem("theme");
+    if (t === "light" || t === "dark") r.setAttribute("data-theme", t);
+  } catch (e) {}
+})()`;
 
 interface RootLayoutProps {
   readonly children: ReactNode;
@@ -82,17 +96,18 @@ export default function RootLayout({ children }: RootLayoutProps) {
     >
       <head>
         {/* Inline and synchronous on purpose: it must run before first paint. */}
-        <script dangerouslySetInnerHTML={{ __html: jsFlagScript }} />
+        <script dangerouslySetInnerHTML={{ __html: bootScript }} />
       </head>
       <body className="flex min-h-full flex-col">
         <GradientBackdrop />
         <CursorGlow />
         <a
           href="#main"
-          className="glass sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:px-4 focus:py-2"
+          className="glass sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2"
         >
           Skip to content
         </a>
+        <Navbar />
         {children}
         <script
           type="application/ld+json"

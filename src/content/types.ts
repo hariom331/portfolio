@@ -23,6 +23,13 @@ export interface ExternalLink {
   readonly kind?: LinkKind;
   /** Screen-reader-only clarification, when the label alone is ambiguous. */
   readonly srLabel?: string;
+  /**
+   * The artefact does not exist yet. The button still renders — so a card
+   * shows the shape of what is coming — but as an inert, dimmed control
+   * marked "soon", never as a link that leads nowhere. `href` is ignored
+   * while this is true, so a placeholder can carry the intended URL.
+   */
+  readonly pending?: boolean;
 }
 
 export interface Role {
@@ -37,38 +44,6 @@ export interface Role {
   readonly tech: readonly string[];
 }
 
-export interface Metric {
-  readonly label: string;
-  readonly value: string;
-}
-
-/**
- * The flagship project section — roughly half the page once it exists.
- *
- * `site.flagship` is `null` until the project is real. The section is omitted
- * entirely while it is null: a "coming soon" block is a worse signal than no
- * block at all.
- */
-export interface Flagship {
-  readonly name: string;
-  readonly tagline: string;
-  /** Three or four lines on the problem it solves. */
-  readonly problem: string;
-  /** The engineering named explicitly — this is what gets read. */
-  readonly hardParts: readonly string[];
-  /** Measured numbers only. Never estimates, never round guesses. */
-  readonly metrics: readonly Metric[];
-  readonly links: readonly ExternalLink[];
-  /** A rendered architecture diagram in `public/`. Intrinsic size is required
-   *  so the browser reserves the space and the page does not shift on load. */
-  readonly diagram?: {
-    readonly src: string;
-    readonly alt: string;
-    readonly width: number;
-    readonly height: number;
-  };
-}
-
 export interface Project {
   readonly name: string;
   readonly stack: readonly string[];
@@ -77,11 +52,11 @@ export interface Project {
 }
 
 /**
- * One word in the skill cloud.
+ * One skill in the skills grid.
  *
- * `weight` drives type size and depth prominence, 1 (peripheral) to 3 (core).
- * It is an editorial judgement about what he wants read first, not a
- * self-assessed proficiency score — the cloud shows no percentages.
+ * `weight` is editorial prominence, 1 (peripheral) to 3 (core) — what he
+ * wants read first, not a self-assessed proficiency score. Weight 3 items are
+ * highlighted; nothing on the page shows a percentage.
  */
 export interface Skill {
   readonly name: string;
@@ -94,27 +69,18 @@ export interface StackGroup {
 }
 
 /**
- * A headline number for the hero tiles.
+ * The hero portrait.
  *
- * Same rule as everywhere else: every value here is measured and traceable to
- * the master resume. `context` carries the comparison that makes the number
- * mean something — a bare "2 min" says nothing without "down from 15-20".
+ * `src` is a path under `public/`. While this is null the hero simply leaves
+ * that half of the row empty, so dropping a real photo in later fills the slot
+ * without moving anything else.
  */
-export interface Highlight {
-  /** The full display string. This is what renders server-side. */
-  readonly value: string;
-  /**
-   * Optional split of `value` for the count-up animation. `prefix + to +
-   * suffix` must reproduce `value` exactly, or the animation will settle on
-   * something different from what was server-rendered.
-   */
-  readonly count?: {
-    readonly prefix: string;
-    readonly to: number;
-    readonly suffix: string;
-  };
-  readonly label: string;
-  readonly context: string;
+export interface Photo {
+  readonly src: string;
+  readonly alt: string;
+  /** Intrinsic size, so the browser reserves the space before it loads. */
+  readonly width: number;
+  readonly height: number;
 }
 
 export interface SiteContent {
@@ -126,12 +92,11 @@ export interface SiteContent {
   /** Absolute origin, used for canonical and Open Graph URLs. */
   readonly url: string;
   readonly email: string;
+  readonly photo: Photo | null;
   readonly links: readonly ExternalLink[];
   readonly positioning: string;
   readonly credentials: string;
-  readonly highlights: readonly Highlight[];
   readonly stack: readonly StackGroup[];
-  readonly flagship: Flagship | null;
   readonly projects: readonly Project[];
   readonly experience: readonly Role[];
 }

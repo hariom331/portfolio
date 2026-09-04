@@ -4,27 +4,29 @@ import { SpotlightCard } from "@/components/SpotlightCard";
 import { site } from "@/content/site";
 
 /**
- * Not a resume clone — the PDF is linked in the rail and stays canonical.
+ * Not a resume clone — the PDF is linked in the hero and stays canonical.
  *
  * Laid out as a row per role with the dates in a left gutter from `sm` up,
  * which is how a reader scans a work history: down the dates first, then
- * across into whichever role they stopped on.
+ * across into whichever role they stopped on. On a phone the gutter becomes a
+ * line above the title instead, because a 9rem column next to text is not a
+ * column any more.
  */
 export function Experience() {
   return (
-    <Section id="experience" title="Experience">
+    <Section id="experience" title="Work experience">
       <div className="space-y-4">
         {site.experience.map((role, index) => (
           <Reveal key={`${role.company}-${role.period}`} delay={index * 80}>
             <SpotlightCard className="p-6 sm:p-7">
-              <div className="sm:grid sm:grid-cols-[9rem_minmax(0,1fr)] sm:gap-6">
+              <div className="sm:grid sm:grid-cols-[10rem_minmax(0,1fr)] sm:gap-8">
                 <p className="text-muted font-mono text-xs leading-relaxed sm:pt-1">
                   {role.period}
                   <span className="block">{role.location}</span>
                 </p>
 
                 <div className="mt-3 sm:mt-0">
-                  <h3 className="text-base font-semibold">
+                  <h3 className="text-lg font-semibold tracking-tight">
                     {role.title}, {role.company}
                   </h3>
 

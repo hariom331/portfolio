@@ -7,8 +7,9 @@ import type { SiteContent } from "./types";
  * `analysis/11-resume-rewritten.md`. If the resume and this file disagree, the
  * resume wins — fix this file, do not fix the resume to match the site.
  *
- * Rule: no number appears here that has not been measured. Placeholders are
- * marked TODO and left unrendered rather than filled with a plausible guess.
+ * Rule: no number appears here that has not been measured. Nothing is filled
+ * in with a plausible guess. Artefacts that do not exist yet are marked
+ * `pending: true` and render as an inert "soon" chip rather than as a link.
  */
 export const site: SiteContent = {
   name: "Hariom Joshi",
@@ -20,6 +21,14 @@ export const site: SiteContent = {
   url: "https://hariomjoshi.dev",
 
   email: "hariomjoshi331@gmail.com",
+
+  /**
+   * TODO: drop a portrait at `public/portrait.jpg` and swap this for
+   * `{ src: "/portrait.jpg", alt: "Hariom Joshi", width: 640, height: 800 }`.
+   * A 4:5 crop matches the frame the hero draws. Until then the hero shows a
+   * monogram placeholder of exactly the same size, so nothing shifts later.
+   */
+  photo: null,
 
   links: [
     // `public/resume.pdf` is a copy of the master PDF. Re-copy it whenever the
@@ -58,39 +67,9 @@ export const site: SiteContent = {
     "Hackathon · AWS Certified Cloud Practitioner",
 
   /**
-   * The hero tiles. Every figure below appears in the master resume and came
-   * from measured work — none is rounded up for effect, and none is invented.
-   */
-  highlights: [
-    {
-      value: "~80%",
-      count: { prefix: "~", to: 80, suffix: "%" },
-      label: "of the AWS estate",
-      context: "owned across dev, UAT and production",
-    },
-    {
-      value: "<2 min",
-      count: { prefix: "<", to: 2, suffix: " min" },
-      label: "EC2 provisioning",
-      context: "down from 15–20 minutes",
-    },
-    {
-      value: "30–40",
-      count: { prefix: "30–", to: 40, suffix: "" },
-      label: "CI/CD pipelines",
-      context: "authored on GitHub Actions",
-    },
-    {
-      value: "500K",
-      count: { prefix: "", to: 500, suffix: "K" },
-      label: "records per peak run",
-      context: "on the migrated batch workloads",
-    },
-  ],
-
-  /**
-   * Feeds the skill cloud. `weight` is editorial prominence, 1-3 — what he
-   * wants a reader to see first, not a proficiency claim.
+   * The skills section. `weight` drives prominence within a group — 3 is a
+   * core tool and renders highlighted, 1 is peripheral. Groups render in the
+   * order written here.
    */
   stack: [
     {
@@ -155,34 +134,34 @@ export const site: SiteContent = {
   ],
 
   /**
-   * Not built yet. The Flagship section is skipped entirely while this is null.
+   * Repo names below are the real ones from the GitHub audit in
+   * `analysis/17-github-cleanup-plan.md` — check them before publishing.
    *
-   * Planned: the Terraform multi-environment platform plus the batch migration
-   * pipeline it deploys, as one system (`analysis/12-project-shortlist-cloud-lane.md`).
-   * Fill this in only when the thing is live and the numbers are measured.
-   */
-  flagship: null,
-
-  /**
-   * Two, maximum. Repo names below are the real ones from the GitHub audit in
-   * `analysis/17-github-cleanup-plan.md` — check them before publishing, and
-   * add `demo` / `docs` / `video` / `writeup` links only once those artefacts
-   * actually exist. A button that leads nowhere is worse than no button.
+   * Descriptions are what a visitor reads, so they carry no notes-to-self.
+   * Outstanding work per project:
+   *
+   * - spender-guardian is still a skeleton (five commits, core flow only). It
+   *   needs a README stating honestly what does and does not run before the
+   *   GitHub button is worth a recruiter clicking.
+   * - The demo, docs and write-up buttons stay `pending` until those
+   *   artefacts exist. Publishing one means dropping `pending` and setting
+   *   the real `href` — that is the whole change.
    */
   projects: [
     {
       name: "spender-guardian",
       stack: ["Java", "Docker", "GitHub Actions", "AWS"],
       description:
-        "AWS cost-visibility tooling. Currently a skeleton — five commits, core flow only. " +
-        "Do not publish this card until the repo has a real README stating honestly what does " +
-        "and does not run.",
+        "AWS cost-visibility tooling: pulls spend per account and surfaces what moved, so a bill " +
+        "that jumps is traceable to the resource behind it rather than to a monthly total.",
       links: [
         {
           label: "GitHub",
           href: "https://github.com/hariom331/spender-guardian-repo.mono",
           kind: "github",
         },
+        { label: "Live demo", href: "", kind: "demo", pending: true },
+        { label: "Docs", href: "", kind: "docs", pending: true },
       ],
     },
     {
@@ -197,6 +176,7 @@ export const site: SiteContent = {
           href: "https://github.com/hariom331/infant-emotion-detection",
           kind: "github",
         },
+        { label: "Write-up", href: "", kind: "writeup", pending: true },
       ],
     },
   ],

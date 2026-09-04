@@ -8,52 +8,100 @@
    the component classes below — never a raw hex value.
    ========================================================================== */
 
+/*
+ * Palette values are defined once, here, as light-* / dark-* pairs. The three
+ * blocks below only *map* them onto the active token names — so a colour is
+ * never written twice and the two themes cannot drift apart.
+ */
 :root {
-  --background: #f7f7fb;
-  --foreground: #0f0f14;
-  --muted: #55555f;
-
-  /* Glass surfaces */
-  --surface: rgba(255, 255, 255, 0.66);
-  --surface-strong: rgba(255, 255, 255, 0.82);
-  --surface-border: rgba(255, 255, 255, 0.75);
-  --rule: rgba(15, 15, 20, 0.08);
-
-  /* Accents, also used for the backdrop blobs and gradient text */
-  --accent: #4f46e5;
-  --accent-2: #0284c7;
-  --accent-3: #9333ea;
-
-  --shadow-card:
+  --light-background: #f7f7fb;
+  --light-foreground: #0f0f14;
+  --light-muted: #55555f;
+  --light-surface: rgba(255, 255, 255, 0.66);
+  --light-surface-strong: rgba(255, 255, 255, 0.82);
+  --light-surface-border: rgba(255, 255, 255, 0.75);
+  --light-rule: rgba(15, 15, 20, 0.08);
+  --light-accent: #4f46e5;
+  --light-accent-2: #0284c7;
+  --light-accent-3: #9333ea;
+  --light-shadow-card:
     0 1px 2px rgba(15, 15, 20, 0.04), 0 8px 24px -12px rgba(15, 15, 20, 0.16);
-  --shadow-card-hover:
+  --light-shadow-card-hover:
     0 1px 2px rgba(15, 15, 20, 0.05), 0 20px 44px -18px rgba(79, 70, 229, 0.35);
+  --light-mesh-opacity: 0.5;
 
-  --mesh-opacity: 0.5;
+  --dark-background: #07070c;
+  --dark-foreground: #f0f0f5;
+  --dark-muted: #9d9daa;
+  --dark-surface: rgba(255, 255, 255, 0.045);
+  --dark-surface-strong: rgba(255, 255, 255, 0.07);
+  --dark-surface-border: rgba(255, 255, 255, 0.1);
+  --dark-rule: rgba(255, 255, 255, 0.09);
+  --dark-accent: #8b8cf9;
+  --dark-accent-2: #38bdf8;
+  --dark-accent-3: #c084fc;
+  --dark-shadow-card:
+    0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 32px -14px rgba(0, 0, 0, 0.7);
+  --dark-shadow-card-hover:
+    0 1px 2px rgba(0, 0, 0, 0.4), 0 24px 52px -20px rgba(139, 140, 249, 0.45);
+  --dark-mesh-opacity: 0.42;
+
+  /* Light is the default mapping. */
+  --background: var(--light-background);
+  --foreground: var(--light-foreground);
+  --muted: var(--light-muted);
+  --surface: var(--light-surface);
+  --surface-strong: var(--light-surface-strong);
+  --surface-border: var(--light-surface-border);
+  --rule: var(--light-rule);
+  --accent: var(--light-accent);
+  --accent-2: var(--light-accent-2);
+  --accent-3: var(--light-accent-3);
+  --shadow-card: var(--light-shadow-card);
+  --shadow-card-hover: var(--light-shadow-card-hover);
+  --mesh-opacity: var(--light-mesh-opacity);
+
+  color-scheme: light;
 }
 
+/* System preference, unless the visitor has explicitly chosen light. */
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #07070c;
-    --foreground: #f0f0f5;
-    --muted: #9d9daa;
+  :root:not([data-theme="light"]) {
+    --background: var(--dark-background);
+    --foreground: var(--dark-foreground);
+    --muted: var(--dark-muted);
+    --surface: var(--dark-surface);
+    --surface-strong: var(--dark-surface-strong);
+    --surface-border: var(--dark-surface-border);
+    --rule: var(--dark-rule);
+    --accent: var(--dark-accent);
+    --accent-2: var(--dark-accent-2);
+    --accent-3: var(--dark-accent-3);
+    --shadow-card: var(--dark-shadow-card);
+    --shadow-card-hover: var(--dark-shadow-card-hover);
+    --mesh-opacity: var(--dark-mesh-opacity);
 
-    --surface: rgba(255, 255, 255, 0.045);
-    --surface-strong: rgba(255, 255, 255, 0.07);
-    --surface-border: rgba(255, 255, 255, 0.1);
-    --rule: rgba(255, 255, 255, 0.09);
-
-    --accent: #8b8cf9;
-    --accent-2: #38bdf8;
-    --accent-3: #c084fc;
-
-    --shadow-card:
-      0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 32px -14px rgba(0, 0, 0, 0.7);
-    --shadow-card-hover:
-      0 1px 2px rgba(0, 0, 0, 0.4), 0 24px 52px -20px rgba(139, 140, 249, 0.45);
-
-    --mesh-opacity: 0.42;
+    color-scheme: dark;
   }
+}
+
+/* Explicit choice always wins over the system preference. */
+:root[data-theme="dark"] {
+  --background: var(--dark-background);
+  --foreground: var(--dark-foreground);
+  --muted: var(--dark-muted);
+  --surface: var(--dark-surface);
+  --surface-strong: var(--dark-surface-strong);
+  --surface-border: var(--dark-surface-border);
+  --rule: var(--dark-rule);
+  --accent: var(--dark-accent);
+  --accent-2: var(--dark-accent-2);
+  --accent-3: var(--dark-accent-3);
+  --shadow-card: var(--dark-shadow-card);
+  --shadow-card-hover: var(--dark-shadow-card-hover);
+  --mesh-opacity: var(--dark-mesh-opacity);
+
+  color-scheme: dark;
 }
 
 @theme inline {
@@ -70,6 +118,15 @@
 /* ==========================================================================
    Base
    ========================================================================== */
+
+/*
+ * Every nav link is a hash jump, so the scroll is animated rather than
+ * instant. Sections carry `scroll-mt-24` to clear the sticky bar; the
+ * reduced-motion block at the foot of this file turns the animation off.
+ */
+html {
+  scroll-behavior: smooth;
+}
 
 body {
   background: var(--background);
@@ -152,151 +209,375 @@ body {
   }
 }
 
-/* ==========================================================================
+/*
+ * Everything below is a component class, wrapped in the `components` layer.
+ *
+ * Layers are what settle the cascade against Tailwind: an unlayered rule beats
+ * every layered one, so `.glass { border-radius: 1rem }` sitting outside a
+ * layer silently defeats a `rounded-full` utility on the same element, and
+ * `.nav-icon-button { display: inline-flex }` defeats `md:hidden`. Inside
+ * `components` — which Tailwind orders before `utilities` — a utility in the
+ * markup always wins, which is the direction anyone reading the JSX expects.
+ */
+@layer components {
+  /* ==========================================================================
    Components
    ========================================================================== */
 
-.glass {
-  background: var(--surface);
-  border: 1px solid var(--surface-border);
-  border-radius: 1rem;
-  box-shadow: var(--shadow-card);
-  backdrop-filter: blur(16px) saturate(140%);
-  -webkit-backdrop-filter: blur(16px) saturate(140%);
-}
+  .glass {
+    background: var(--surface);
+    border: 1px solid var(--surface-border);
+    border-radius: 1rem;
+    box-shadow: var(--shadow-card);
+    backdrop-filter: blur(16px) saturate(140%);
+  }
 
-.glass-hover {
-  transition:
-    box-shadow 0.35s ease,
-    transform 0.35s ease,
-    background-color 0.35s ease;
-}
+  .glass-hover {
+    transition:
+      box-shadow 0.35s ease,
+      transform 0.35s ease,
+      background-color 0.35s ease;
+  }
 
-.glass-hover:hover {
-  background: var(--surface-strong);
-  box-shadow: var(--shadow-card-hover);
-  transform: translateY(-2px);
-}
+  .glass-hover:hover {
+    background: var(--surface-strong);
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-2px);
+  }
 
-/*
+  /*
  * Gradient-filled type. `color` is set first so the text is still readable if
  * `background-clip: text` is unsupported; the @supports block only then makes
  * it transparent.
  */
-.gradient-text {
-  color: var(--foreground);
-}
-
-@supports (background-clip: text) or (-webkit-background-clip: text) {
   .gradient-text {
-    background-image: linear-gradient(
-      100deg,
-      var(--accent-3) 0%,
-      var(--accent) 42%,
-      var(--accent-2) 100%
-    );
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+    color: var(--foreground);
   }
-}
 
-.pill {
-  display: inline-block;
-  padding: 0.3rem 0.7rem;
-  font-size: 0.78rem;
-  line-height: 1.1rem;
-  color: var(--muted);
-  background: var(--surface);
-  border: 1px solid var(--rule);
-  border-radius: 9999px;
-  transition:
-    color 0.25s ease,
-    border-color 0.25s ease;
-}
+  @supports (background-clip: text) or (-webkit-background-clip: text) {
+    .gradient-text {
+      background-image: linear-gradient(
+        100deg,
+        var(--accent-3) 0%,
+        var(--accent) 42%,
+        var(--accent-2) 100%
+      );
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+  }
 
-.pill:hover {
-  color: var(--foreground);
-  border-color: var(--accent);
-}
-
-/* ==========================================================================
-   Skill cloud
-
-   Two layouts for one set of elements. The default is an ordinary wrapped
-   list of pills — that is what renders without JavaScript, and what a
-   visitor who prefers reduced motion keeps. `SkillCloud` adds `.is-3d` only
-   once it has taken over positioning, at which point the same `li` elements
-   become absolutely positioned points on a rotating sphere.
+  /* ==========================================================================
+   Top bar
    ========================================================================== */
 
-.skill-cloud {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.5rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.skill-cloud.is-3d {
-  position: relative;
-  display: block;
-  height: 22rem;
-  /* A word swinging wide must never widen the page. */
-  overflow: hidden;
-  perspective: 620px;
-  transform-style: preserve-3d;
-}
-
-@media (min-width: 640px) {
-  .skill-cloud.is-3d {
-    height: 28rem;
+  .nav-shell {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    /* Translucent rather than solid, so the mesh still moves behind it. */
+    background: color-mix(in srgb, var(--background) 78%, transparent);
+    border-bottom: 1px solid var(--rule);
+    backdrop-filter: blur(14px) saturate(150%);
   }
-}
 
-@media (min-width: 1280px) {
-  .skill-cloud.is-3d {
-    height: 32rem;
+  .nav-monogram {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    font-family: var(--font-mono), ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    /* White on a saturated gradient in both themes — not a token colour. */
+    color: #fff;
+    background-image: linear-gradient(
+      135deg,
+      var(--accent-3),
+      var(--accent) 55%,
+      var(--accent-2)
+    );
+    border-radius: 0.65rem;
+    box-shadow: var(--shadow-card);
   }
-}
 
-.skill-cloud.is-3d .skill-cloud-item {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  padding: 0;
-  white-space: nowrap;
-  background: none;
-  border: none;
-  border-radius: 0;
-  /* Centres each word on its own point. `translate` is applied before
-     `transform`, so it composes with the matrix written by the animation. */
-  translate: -50% -50%;
-  will-change: transform, opacity;
-}
+  .nav-link {
+    position: relative;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.8125rem;
+    color: var(--muted);
+    border-radius: 9999px;
+    transition:
+      color 0.25s ease,
+      background-color 0.25s ease;
+  }
 
-.skill-cloud-item[data-weight="1"] {
-  font-size: 0.75rem;
-}
+  .nav-link:hover {
+    color: var(--foreground);
+    background: var(--surface);
+  }
 
-.skill-cloud-item[data-weight="2"] {
-  font-size: 0.9rem;
-}
+  .nav-link.is-active {
+    color: var(--foreground);
+  }
 
-.skill-cloud.is-3d .skill-cloud-item[data-weight="3"] {
-  font-size: 1.15rem;
-  font-weight: 600;
-  color: var(--accent);
-}
+  /*
+ * The scroll-spy marker. Scoped to the desktop bar: below `md` these links
+ * are full-width rows in the disclosure panel, where a short centred
+ * underline would read as an underlined word rather than a marker.
+ */
+  @media (min-width: 768px) {
+    .nav-link.is-active::after {
+      content: "";
+      position: absolute;
+      bottom: 0.1rem;
+      left: 50%;
+      width: 1.1rem;
+      height: 2px;
+      translate: -50% 0;
+      background: var(--accent);
+      border-radius: 9999px;
+    }
+  }
 
-.skill-cloud.is-3d .skill-cloud-item:hover {
-  color: var(--foreground);
-  text-shadow: 0 0 22px color-mix(in srgb, var(--accent) 65%, transparent);
-}
+  .nav-icon-button {
+    width: 2.25rem;
+    height: 2.25rem;
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px solid var(--surface-border);
+    border-radius: 9999px;
+    transition:
+      color 0.25s ease,
+      background-color 0.25s ease,
+      border-color 0.25s ease;
+  }
 
-/* ==========================================================================
+  .nav-icon-button:hover {
+    color: var(--foreground);
+    background: var(--surface-strong);
+    border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  }
+
+  /* Two bars that rotate into an X. Separate elements so each transform is a
+   plain rotate, rather than one path morphing into another. */
+  .nav-burger {
+    position: relative;
+    display: block;
+    width: 1rem;
+    height: 0.75rem;
+  }
+
+  .nav-burger > span {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 1.5px;
+    background: currentColor;
+    border-radius: 9999px;
+    /* Tailwind writes `rotate` and `translate` as individual properties, so
+     transitioning `transform` alone would animate nothing. */
+    transition:
+      rotate 0.25s ease,
+      translate 0.25s ease;
+  }
+
+  .nav-burger > span:first-child {
+    top: 2px;
+  }
+
+  .nav-burger > span:last-child {
+    bottom: 2px;
+  }
+
+  /*
+ * The theme icon is chosen in CSS, not in React: the control cannot know the
+ * OS preference until it hydrates, and a sun that flips to a moon a moment
+ * after load is exactly the flash the boot script exists to prevent. Each
+ * theme shows the icon for the theme the button switches *to*.
+ */
+  .theme-icon-sun {
+    display: none;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .theme-icon-sun {
+      display: block;
+    }
+
+    :root:not([data-theme="light"]) .theme-icon-moon {
+      display: none;
+    }
+  }
+
+  :root[data-theme="dark"] .theme-icon-sun {
+    display: block;
+  }
+
+  :root[data-theme="dark"] .theme-icon-moon {
+    display: none;
+  }
+
+  /* ==========================================================================
+   Hero frame
+
+   The portrait slot, sized so the hero row keeps its shape at every
+   breakpoint. Nothing stands in it while `site.photo` is null: the hero
+   leaves that half of the row empty rather than filling it with a stand-in.
+   ========================================================================== */
+
+  .photo-frame {
+    width: 12.5rem;
+    aspect-ratio: 4 / 5;
+    height: auto;
+    border: 1px solid var(--surface-border);
+    border-radius: 1.5rem;
+    box-shadow: var(--shadow-card);
+  }
+
+  @media (min-width: 768px) {
+    .photo-frame {
+      width: 15rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .photo-frame {
+      width: 17.5rem;
+    }
+  }
+
+  /* ==========================================================================
+   Buttons and form fields
+   ========================================================================== */
+
+  .button-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.6rem 1.35rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #fff;
+    background-image: linear-gradient(
+      120deg,
+      var(--accent-3),
+      var(--accent) 55%,
+      var(--accent-2)
+    );
+    border-radius: 9999px;
+    box-shadow: var(--shadow-card);
+    transition:
+      transform 0.25s ease,
+      box-shadow 0.25s ease,
+      filter 0.25s ease;
+  }
+
+  .button-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-card-hover);
+    filter: saturate(115%);
+  }
+
+  .button-ghost {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1.05rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px solid var(--surface-border);
+    border-radius: 9999px;
+    transition:
+      color 0.25s ease,
+      background-color 0.25s ease,
+      border-color 0.25s ease;
+  }
+
+  .button-ghost:hover {
+    color: var(--foreground);
+    background: var(--surface-strong);
+    border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  }
+
+  .field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  .field-group > label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    color: var(--muted);
+  }
+
+  .field {
+    width: 100%;
+    padding: 0.6rem 0.85rem;
+    font: inherit;
+    font-size: 0.875rem;
+    color: var(--foreground);
+    background: var(--surface-strong);
+    border: 1px solid var(--rule);
+    border-radius: 0.75rem;
+    transition:
+      border-color 0.25s ease,
+      box-shadow 0.25s ease;
+  }
+
+  .field::placeholder {
+    color: color-mix(in srgb, var(--muted) 65%, transparent);
+  }
+
+  /*
+ * Replaces the global focus ring on inputs rather than adding to it: a soft
+ * inner glow on a rounded field reads better than a detached outline, and two
+ * rings at once look like a bug.
+ */
+  .field:focus-visible {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
+  }
+
+  .pill {
+    display: inline-block;
+    padding: 0.3rem 0.7rem;
+    font-size: 0.78rem;
+    line-height: 1.1rem;
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 9999px;
+    transition:
+      color 0.25s ease,
+      border-color 0.25s ease;
+  }
+
+  .pill:hover {
+    color: var(--foreground);
+    border-color: var(--accent);
+  }
+
+  /* A daily-driver tool. Weight 3 in the content file. */
+  .pill-core {
+    font-weight: 500;
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 11%, var(--surface));
+    border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  }
+
+  .pill-core:hover {
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 18%, var(--surface));
+  }
+
+  /* ==========================================================================
    Cursor glow
 
    A single fixed layer that follows the pointer across the whole page. Only
@@ -304,103 +585,125 @@ body {
    motion preference, which is what `.has-cursor-glow` on the root signals.
    ========================================================================== */
 
-.cursor-glow {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  display: none;
-  pointer-events: none;
-  background: radial-gradient(
-    420px circle at var(--cursor-x, 50%) var(--cursor-y, 50%),
-    color-mix(in srgb, var(--accent) 13%, transparent),
-    transparent 68%
-  );
-}
+  .cursor-glow {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    display: none;
+    pointer-events: none;
+    background: radial-gradient(
+      420px circle at var(--cursor-x, 50%) var(--cursor-y, 50%),
+      color-mix(in srgb, var(--accent) 13%, transparent),
+      transparent 68%
+    );
+  }
 
-.has-cursor-glow .cursor-glow {
-  display: block;
-}
+  .has-cursor-glow .cursor-glow {
+    display: block;
+  }
 
-/* ==========================================================================
+  /* ==========================================================================
    Spotlight cards and link buttons
    ========================================================================== */
 
-.spotlight {
-  position: relative;
-  overflow: hidden;
-}
+  .spotlight {
+    position: relative;
+    overflow: hidden;
+  }
 
-.spotlight::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  border-radius: inherit;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-  background: radial-gradient(
-    260px circle at var(--spot-x, 50%) var(--spot-y, 50%),
-    color-mix(in srgb, var(--accent) 28%, transparent),
-    transparent 72%
-  );
-}
+  .spotlight::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border-radius: inherit;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    background: radial-gradient(
+      260px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+      color-mix(in srgb, var(--accent) 28%, transparent),
+      transparent 72%
+    );
+  }
 
-.spotlight:hover::before {
-  opacity: 1;
-}
+  .spotlight:hover::before {
+    opacity: 1;
+  }
 
-/*
+  /*
  * The tracked border. A gradient filling the whole card, masked down to just
  * the 1px ring: paint the padding-box and the border-box, then subtract one
  * from the other so only the edge survives.
  */
-.spotlight::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  padding: 1px;
-  border-radius: inherit;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-  background: radial-gradient(
-    320px circle at var(--spot-x, 50%) var(--spot-y, 50%),
-    var(--accent),
-    transparent 62%
-  );
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-}
+  .spotlight::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    padding: 1px;
+    border-radius: inherit;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    background: radial-gradient(
+      320px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+      var(--accent),
+      transparent 62%
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+  }
 
-.spotlight:hover::after {
-  opacity: 1;
-}
+  .spotlight:hover::after {
+    opacity: 1;
+  }
 
-/* Keeps card content above the highlight rather than beneath it. */
-.spotlight > * {
-  position: relative;
-  z-index: 1;
-}
+  /* Keeps card content above the highlight rather than beneath it. */
+  .spotlight > * {
+    position: relative;
+    z-index: 1;
+  }
 
-.link-button-arrow {
-  opacity: 0.35;
-  transition:
-    opacity 0.25s ease,
-    transform 0.25s ease;
-}
+  /*
+ * A link button for an artefact that does not exist yet. Dashed and dimmed so
+ * it never reads as clickable — it is a `span`, so there is nothing to click
+ * and nothing to tab to either.
+ */
+  .link-pending {
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px dashed var(--rule);
+    opacity: 0.72;
+    cursor: default;
+  }
 
-.link-button:hover .link-button-arrow,
-.link-button:focus-visible .link-button-arrow {
-  opacity: 1;
-  transform: translateX(2px);
+  .link-soon {
+    font-family: var(--font-mono), ui-monospace, monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    opacity: 0.8;
+  }
+
+  .link-button-arrow {
+    opacity: 0.35;
+    transition:
+      opacity 0.25s ease,
+      transform 0.25s ease;
+  }
+
+  .link-button:hover .link-button-arrow,
+  .link-button:focus-visible .link-button-arrow {
+    opacity: 1;
+    transform: translateX(2px);
+  }
 }
 
 /* ==========================================================================
@@ -432,6 +735,11 @@ body {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+
+  /* A nav jump lands instantly instead of sliding the whole page past. */
+  html {
+    scroll-behavior: auto;
   }
 
   .js [data-reveal] {
