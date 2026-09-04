@@ -3,8 +3,12 @@
 // Failures name the bad path and throw at build time.
 
 import type {
+  Credential,
+  Deploy,
+  DeployStep,
   ExternalLink,
   LinkKind,
+  Metric,
   Photo,
   Project,
   Role,
@@ -126,6 +130,41 @@ function stackGroup(value: unknown, path: string): StackGroup {
   };
 }
 
+function metric(value: unknown, path: string): Metric {
+  const f = fields(value, path);
+  return {
+    value: str(f.value, `${path}.value`),
+    label: str(f.label, `${path}.label`),
+    note: str(f.note, `${path}.note`),
+  };
+}
+
+function credential(value: unknown, path: string): Credential {
+  const f = fields(value, path);
+  return {
+    label: str(f.label, `${path}.label`),
+    value: str(f.value, `${path}.value`),
+  };
+}
+
+function deployStep(value: unknown, path: string): DeployStep {
+  const f = fields(value, path);
+  return {
+    phase: str(f.phase, `${path}.phase`),
+    text: str(f.text, `${path}.text`),
+    result: str(f.result, `${path}.result`),
+  };
+}
+
+function deploy(value: unknown, path: string): Deploy {
+  const f = fields(value, path);
+  return {
+    command: str(f.command, `${path}.command`),
+    steps: list(f.steps, `${path}.steps`, deployStep),
+    result: str(f.result, `${path}.result`),
+  };
+}
+
 function project(value: unknown, path: string): Project {
   const f = fields(value, path);
   return {
@@ -142,8 +181,10 @@ function role(value: unknown, path: string): Role {
     company: str(f.company, `${path}.company`),
     title: str(f.title, `${path}.title`),
     period: str(f.period, `${path}.period`),
+    since: optional(f.since, `${path}.since`, str),
     location: str(f.location, `${path}.location`),
     context: str(f.context, `${path}.context`),
+    metrics: list(f.metrics, `${path}.metrics`, metric),
     bullets: list(f.bullets, `${path}.bullets`, str),
     tech: list(f.tech, `${path}.tech`, str),
   };
@@ -168,12 +209,15 @@ export function parseSiteContent(value: unknown): SiteContent {
     role: str(f.role, "role"),
     tagline: str(f.tagline, "tagline"),
     location: str(f.location, "location"),
+    region: str(f.region, "region"),
     url: str(f.url, "url"),
     email: str(f.email, "email"),
     photo: photo(f.photo, "photo"),
     links: list(f.links, "links", link),
     positioning: str(f.positioning, "positioning"),
-    credentials: str(f.credentials, "credentials"),
+    philosophy: str(f.philosophy, "philosophy"),
+    deploy: deploy(f.deploy, "deploy"),
+    credentials: list(f.credentials, "credentials", credential),
     stack: list(f.stack, "stack", stackGroup),
     projects: list(f.projects, "projects", project),
     experience: list(f.experience, "experience", role),

@@ -40,5 +40,5 @@ export function CursorGlow() {
     };
   }, []);
 
-  return <div className="cursor-glow" aria-hidden="true" />;
+  return <div className="cursor-grid" aria-hidden="true" />;
 }

@@ -3,20 +3,22 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 
+import { CopyEmail } from "@/components/CopyEmail";
+import { LinkIcon } from "@/components/LinkIcon";
+import { Lit } from "@/components/Lit";
 import { Section } from "@/components/Section";
-import { SpotlightCard } from "@/components/SpotlightCard";
 import { site } from "@/content/site";
-
-type Status = "idle" | "composed" | "copied";
+import { anchorProps } from "@/lib/links";
 
 // Keeps the composed mailto well inside what mail clients accept.
 const MESSAGE_MAX = 1200;
 
-// Static export, so there is no endpoint to POST to. The form composes a
-// mailto and hands it to the visitor's own mail client. To move to a real
-// endpoint, swap the body of handleSubmit for a fetch.
+// A static export has no endpoint to POST to. The form composes a mailto and
+// hands it to the visitor's own mail client — which is also why the panel says
+// so rather than pretending to send. To move to a real endpoint, swap the body
+// of handleSubmit for a fetch.
 export function Contact() {
-  const [status, setStatus] = useState<Status>("idle");
+  const [composed, setComposed] = useState(false);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -35,113 +37,147 @@ export function Contact() {
       `?subject=${encodeURIComponent(subject)}` +
       `&body=${encodeURIComponent(body)}`;
 
-    setStatus("composed");
+    setComposed(true);
   };
 
-  const copyEmail = async () => {
-    try {
-      await navigator.clipboard.writeText(site.email);
-      setStatus("copied");
-    } catch {
-      // Blocked clipboard. The address is on screen next to the button.
-    }
-  };
+  const profiles = site.links.filter(
+    (link) => link.kind === "github" || link.kind === "linkedin",
+  );
 
   return (
     <Section
       id="contact"
-      title="Get in touch"
-      lead="Recruiters hiring for cloud or backend roles, and engineers who want to compare notes on AWS migrations — both welcome. I read everything that arrives."
+      title="Contact"
+      lead="Recruiters hiring for cloud, DevOps or backend roles, and engineers who want to compare notes on AWS migrations — both welcome."
     >
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]">
-        <SpotlightCard className="flex flex-col p-6 sm:p-7">
-          <p className="text-muted font-mono text-xs tracking-[0.18em] uppercase">
-            Email
-          </p>
-
-          <a
-            href={`mailto:${site.email}`}
-            className="text-accent mt-3 text-lg font-medium break-all underline-offset-4 hover:underline"
-          >
-            {site.email}
-          </a>
-
-          <p className="text-muted mt-4 text-sm leading-relaxed">
-            Based in {site.location}, open to remote and hybrid roles. The
-            fastest route is a direct email — the form does the same thing, it
-            just fills the draft in for you.
-          </p>
-
-          <div className="mt-auto flex flex-wrap items-center gap-3 pt-6">
-            <button type="button" onClick={copyEmail} className="button-ghost">
-              Copy address
-            </button>
-
-            <span aria-live="polite" className="text-muted text-xs">
-              {status === "copied" ? "Copied to clipboard" : ""}
-            </span>
+      <div className="grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
+        <Lit className="flex flex-col">
+          <div className="panel-head">
+            <span aria-hidden="true" className="live-dot" />
+            <span>open channel</span>
           </div>
-        </SpotlightCard>
 
-        <SpotlightCard className="p-6 sm:p-7">
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="field-group">
-                <label htmlFor="contact-name">Name</label>
-                <input
-                  id="contact-name"
-                  name="name"
-                  type="text"
-                  required
-                  autoComplete="name"
-                  placeholder="Ada Lovelace"
-                  className="field"
-                />
+          <div className="panel-body flex flex-1 flex-col">
+            <p className="mono-label">Primary</p>
+            <a
+              href={`mailto:${site.email}`}
+              className="text-accent mt-2 block font-mono text-sm break-all underline-offset-4 hover:underline sm:text-base"
+            >
+              {site.email}
+            </a>
+
+            <dl className="border-line mt-6 space-y-3 border-t pt-5">
+              <div className="flex items-baseline gap-3">
+                <dt className="mono-label w-20 shrink-0">Based</dt>
+                <dd className="text-muted text-sm">{site.location}</dd>
+              </div>
+              <div className="flex items-baseline gap-3">
+                <dt className="mono-label w-20 shrink-0">Region</dt>
+                <dd className="text-muted font-mono text-sm">{site.region}</dd>
+              </div>
+              <div className="flex items-baseline gap-3">
+                <dt className="mono-label w-20 shrink-0">Notice</dt>
+                <dd className="text-muted text-sm">
+                  Open to remote and hybrid
+                </dd>
+              </div>
+            </dl>
+
+            <div className="mt-auto flex flex-wrap items-center gap-2 pt-7">
+              <CopyEmail />
+              {profiles.map((link) => (
+                <a
+                  key={link.kind}
+                  href={link.href}
+                  {...anchorProps(link.href)}
+                  aria-label={link.label}
+                  title={link.label}
+                  className="icon-btn"
+                >
+                  {link.kind ? <LinkIcon kind={link.kind} /> : null}
+                </a>
+              ))}
+            </div>
+          </div>
+        </Lit>
+
+        <Lit>
+          <div className="panel-head">
+            <span>compose</span>
+            <span className="panel-head-end">mailto</span>
+          </div>
+
+          <div className="panel-body">
+            {/* The request this form is really making, spelled out. */}
+            <pre className="text-faint mb-5 font-mono text-[0.6875rem] leading-relaxed">
+              <code>
+                <span className="text-accent">POST</span> /hire HTTP/1.1{"\n"}
+                Host: {new URL(site.url).host}
+                {"\n"}
+                Content-Type: text/plain
+              </code>
+            </pre>
+
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="field-group">
+                  <label htmlFor="contact-name">from.name</label>
+                  <input
+                    id="contact-name"
+                    name="name"
+                    type="text"
+                    required
+                    autoComplete="name"
+                    placeholder="Ada Lovelace"
+                    className="field"
+                  />
+                </div>
+
+                <div className="field-group">
+                  <label htmlFor="contact-email">from.email</label>
+                  <input
+                    id="contact-email"
+                    name="email"
+                    type="email"
+                    required
+                    autoComplete="email"
+                    placeholder="ada@example.com"
+                    className="field"
+                  />
+                </div>
               </div>
 
               <div className="field-group">
-                <label htmlFor="contact-email">Email</label>
-                <input
-                  id="contact-email"
-                  name="email"
-                  type="email"
+                <label htmlFor="contact-message">body</label>
+                <textarea
+                  id="contact-message"
+                  name="message"
                   required
-                  autoComplete="email"
-                  placeholder="ada@example.com"
-                  className="field"
+                  rows={5}
+                  maxLength={MESSAGE_MAX}
+                  placeholder="The role, the team, or the thing you want to compare notes on."
+                  className="field resize-y"
                 />
               </div>
-            </div>
 
-            <div className="field-group">
-              <label htmlFor="contact-message">Message</label>
-              <textarea
-                id="contact-message"
-                name="message"
-                required
-                rows={5}
-                maxLength={MESSAGE_MAX}
-                placeholder="The role, the team, or the thing you want to compare notes on."
-                className="field resize-y"
-              />
-            </div>
+              <div className="flex flex-wrap items-center gap-4">
+                <button type="submit" className="btn btn-primary">
+                  send request
+                  <span aria-hidden="true">→</span>
+                </button>
 
-            <div className="flex flex-wrap items-center gap-4">
-              <button type="submit" className="button-primary">
-                Compose email
-              </button>
-
-              <p
-                aria-live="polite"
-                className="text-muted text-xs leading-relaxed"
-              >
-                {status === "composed"
-                  ? "Your mail app should be open with the draft ready — nothing is sent from this page."
-                  : "Opens your mail app with the message filled in."}
-              </p>
-            </div>
-          </form>
-        </SpotlightCard>
+                <p
+                  aria-live="polite"
+                  className="text-faint max-w-xs text-xs leading-relaxed"
+                >
+                  {composed
+                    ? "Your mail app should be open with the draft ready — nothing is sent from this page."
+                    : "Opens your mail app with the message filled in."}
+                </p>
+              </div>
+            </form>
+          </div>
+        </Lit>
       </div>
     </Section>
   );
