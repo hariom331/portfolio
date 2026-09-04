@@ -1,0 +1,695 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   Design tokens
+   ========================================================================== */
+
+/* Defined once as light-* / dark-* pairs, then mapped onto the active names. */
+:root {
+  --light-background: #f7f7fb;
+  --light-foreground: #0f0f14;
+  --light-muted: #55555f;
+  --light-surface: rgba(255, 255, 255, 0.66);
+  --light-surface-strong: rgba(255, 255, 255, 0.82);
+  --light-surface-border: rgba(255, 255, 255, 0.75);
+  --light-rule: rgba(15, 15, 20, 0.08);
+  --light-accent: #4f46e5;
+  --light-accent-2: #0284c7;
+  --light-accent-3: #9333ea;
+  --light-shadow-card:
+    0 1px 2px rgba(15, 15, 20, 0.04), 0 8px 24px -12px rgba(15, 15, 20, 0.16);
+  --light-shadow-card-hover:
+    0 1px 2px rgba(15, 15, 20, 0.05), 0 20px 44px -18px rgba(79, 70, 229, 0.35);
+  --light-mesh-opacity: 0.5;
+
+  --dark-background: #07070c;
+  --dark-foreground: #f0f0f5;
+  --dark-muted: #9d9daa;
+  --dark-surface: rgba(255, 255, 255, 0.045);
+  --dark-surface-strong: rgba(255, 255, 255, 0.07);
+  --dark-surface-border: rgba(255, 255, 255, 0.1);
+  --dark-rule: rgba(255, 255, 255, 0.09);
+  --dark-accent: #8b8cf9;
+  --dark-accent-2: #38bdf8;
+  --dark-accent-3: #c084fc;
+  --dark-shadow-card:
+    0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 32px -14px rgba(0, 0, 0, 0.7);
+  --dark-shadow-card-hover:
+    0 1px 2px rgba(0, 0, 0, 0.4), 0 24px 52px -20px rgba(139, 140, 249, 0.45);
+  --dark-mesh-opacity: 0.42;
+
+  /* Light is the default mapping. */
+  --background: var(--light-background);
+  --foreground: var(--light-foreground);
+  --muted: var(--light-muted);
+  --surface: var(--light-surface);
+  --surface-strong: var(--light-surface-strong);
+  --surface-border: var(--light-surface-border);
+  --rule: var(--light-rule);
+  --accent: var(--light-accent);
+  --accent-2: var(--light-accent-2);
+  --accent-3: var(--light-accent-3);
+  --shadow-card: var(--light-shadow-card);
+  --shadow-card-hover: var(--light-shadow-card-hover);
+  --mesh-opacity: var(--light-mesh-opacity);
+
+  color-scheme: light;
+}
+
+/* System preference, unless light was explicitly chosen. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --background: var(--dark-background);
+    --foreground: var(--dark-foreground);
+    --muted: var(--dark-muted);
+    --surface: var(--dark-surface);
+    --surface-strong: var(--dark-surface-strong);
+    --surface-border: var(--dark-surface-border);
+    --rule: var(--dark-rule);
+    --accent: var(--dark-accent);
+    --accent-2: var(--dark-accent-2);
+    --accent-3: var(--dark-accent-3);
+    --shadow-card: var(--dark-shadow-card);
+    --shadow-card-hover: var(--dark-shadow-card-hover);
+    --mesh-opacity: var(--dark-mesh-opacity);
+
+    color-scheme: dark;
+  }
+}
+
+/* Explicit choice always wins over the system preference. */
+:root[data-theme="dark"] {
+  --background: var(--dark-background);
+  --foreground: var(--dark-foreground);
+  --muted: var(--dark-muted);
+  --surface: var(--dark-surface);
+  --surface-strong: var(--dark-surface-strong);
+  --surface-border: var(--dark-surface-border);
+  --rule: var(--dark-rule);
+  --accent: var(--dark-accent);
+  --accent-2: var(--dark-accent-2);
+  --accent-3: var(--dark-accent-3);
+  --shadow-card: var(--dark-shadow-card);
+  --shadow-card-hover: var(--dark-shadow-card-hover);
+  --mesh-opacity: var(--dark-mesh-opacity);
+
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-rule: var(--rule);
+  --color-accent: var(--accent);
+
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+/* Nav links are hash jumps, so the scroll is animated. Turned off in the
+   reduced-motion block at the foot of this file. */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ==========================================================================
+   Gradient mesh backdrop
+   ========================================================================== */
+
+.mesh {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.mesh-blob {
+  position: absolute;
+  border-radius: 9999px;
+  opacity: var(--mesh-opacity);
+  filter: blur(72px);
+  will-change: transform;
+}
+
+.mesh-blob-1 {
+  top: -14rem;
+  left: -10rem;
+  width: 42rem;
+  height: 42rem;
+  background: radial-gradient(circle, var(--accent) 0%, transparent 68%);
+  animation: drift-1 26s ease-in-out infinite alternate;
+}
+
+.mesh-blob-2 {
+  top: 8rem;
+  right: -16rem;
+  width: 38rem;
+  height: 38rem;
+  background: radial-gradient(circle, var(--accent-2) 0%, transparent 68%);
+  animation: drift-2 31s ease-in-out infinite alternate;
+}
+
+.mesh-blob-3 {
+  bottom: -18rem;
+  left: 22%;
+  width: 40rem;
+  height: 40rem;
+  background: radial-gradient(circle, var(--accent-3) 0%, transparent 68%);
+  animation: drift-3 37s ease-in-out infinite alternate;
+}
+
+@keyframes drift-1 {
+  to {
+    transform: translate3d(7rem, 4rem, 0) scale(1.12);
+  }
+}
+
+@keyframes drift-2 {
+  to {
+    transform: translate3d(-6rem, 6rem, 0) scale(0.9);
+  }
+}
+
+@keyframes drift-3 {
+  to {
+    transform: translate3d(5rem, -5rem, 0) scale(1.08);
+  }
+}
+
+/* Wrapped in the components layer so utilities in the markup still win. An
+   unlayered .glass rule would silently beat rounded-full on the same element. */
+@layer components {
+  /* ==========================================================================
+   Components
+   ========================================================================== */
+
+  .glass {
+    background: var(--surface);
+    border: 1px solid var(--surface-border);
+    border-radius: 1rem;
+    box-shadow: var(--shadow-card);
+    backdrop-filter: blur(16px) saturate(140%);
+  }
+
+  .glass-hover {
+    transition:
+      box-shadow 0.35s ease,
+      transform 0.35s ease,
+      background-color 0.35s ease;
+  }
+
+  .glass-hover:hover {
+    background: var(--surface-strong);
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-2px);
+  }
+
+  /* color is set first so the text survives without background-clip. */
+  .gradient-text {
+    color: var(--foreground);
+  }
+
+  @supports (background-clip: text) or (-webkit-background-clip: text) {
+    .gradient-text {
+      background-image: linear-gradient(
+        100deg,
+        var(--accent-3) 0%,
+        var(--accent) 42%,
+        var(--accent-2) 100%
+      );
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+  }
+
+  /* ==========================================================================
+   Top bar
+   ========================================================================== */
+
+  .nav-shell {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    /* Translucent rather than solid, so the mesh still moves behind it. */
+    background: color-mix(in srgb, var(--background) 78%, transparent);
+    border-bottom: 1px solid var(--rule);
+    backdrop-filter: blur(14px) saturate(150%);
+  }
+
+  .nav-monogram {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    font-family: var(--font-mono), ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    /* White on a saturated gradient in both themes, so not a token. */
+    color: #fff;
+    background-image: linear-gradient(
+      135deg,
+      var(--accent-3),
+      var(--accent) 55%,
+      var(--accent-2)
+    );
+    border-radius: 0.65rem;
+    box-shadow: var(--shadow-card);
+  }
+
+  .nav-link {
+    position: relative;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.8125rem;
+    color: var(--muted);
+    border-radius: 9999px;
+    transition:
+      color 0.25s ease,
+      background-color 0.25s ease;
+  }
+
+  .nav-link:hover {
+    color: var(--foreground);
+    background: var(--surface);
+  }
+
+  .nav-link.is-active {
+    color: var(--foreground);
+  }
+
+  /* Desktop only: in the mobile panel a short underline would read as an
+     underlined word rather than a marker. */
+  @media (min-width: 768px) {
+    .nav-link.is-active::after {
+      content: "";
+      position: absolute;
+      bottom: 0.1rem;
+      left: 50%;
+      width: 1.1rem;
+      height: 2px;
+      translate: -50% 0;
+      background: var(--accent);
+      border-radius: 9999px;
+    }
+  }
+
+  .nav-icon-button {
+    width: 2.25rem;
+    height: 2.25rem;
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px solid var(--surface-border);
+    border-radius: 9999px;
+    transition:
+      color 0.25s ease,
+      background-color 0.25s ease,
+      border-color 0.25s ease;
+  }
+
+  .nav-icon-button:hover {
+    color: var(--foreground);
+    background: var(--surface-strong);
+    border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  }
+
+  /* Separate elements, so each transform is a plain rotate. */
+  .nav-burger {
+    position: relative;
+    display: block;
+    width: 1rem;
+    height: 0.75rem;
+  }
+
+  .nav-burger > span {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 1.5px;
+    background: currentColor;
+    border-radius: 9999px;
+    /* Tailwind writes rotate and translate as individual properties, so
+       transitioning transform alone would animate nothing. */
+    transition:
+      rotate 0.25s ease,
+      translate 0.25s ease;
+  }
+
+  .nav-burger > span:first-child {
+    top: 2px;
+  }
+
+  .nav-burger > span:last-child {
+    bottom: 2px;
+  }
+
+  /* Chosen in CSS, not React, so the first paint is correct. Each theme
+     shows the icon for the theme the button switches to. */
+  .theme-icon-sun {
+    display: none;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .theme-icon-sun {
+      display: block;
+    }
+
+    :root:not([data-theme="light"]) .theme-icon-moon {
+      display: none;
+    }
+  }
+
+  :root[data-theme="dark"] .theme-icon-sun {
+    display: block;
+  }
+
+  :root[data-theme="dark"] .theme-icon-moon {
+    display: none;
+  }
+
+  /* ==========================================================================
+   Hero frame
+   ========================================================================== */
+
+  .photo-frame {
+    width: 12.5rem;
+    aspect-ratio: 4 / 5;
+    height: auto;
+    border: 1px solid var(--surface-border);
+    border-radius: 1.5rem;
+    box-shadow: var(--shadow-card);
+  }
+
+  @media (min-width: 768px) {
+    .photo-frame {
+      width: 15rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .photo-frame {
+      width: 17.5rem;
+    }
+  }
+
+  /* ==========================================================================
+   Buttons and form fields
+   ========================================================================== */
+
+  .button-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.6rem 1.35rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #fff;
+    background-image: linear-gradient(
+      120deg,
+      var(--accent-3),
+      var(--accent) 55%,
+      var(--accent-2)
+    );
+    border-radius: 9999px;
+    box-shadow: var(--shadow-card);
+    transition:
+      transform 0.25s ease,
+      box-shadow 0.25s ease,
+      filter 0.25s ease;
+  }
+
+  .button-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-card-hover);
+    filter: saturate(115%);
+  }
+
+  .button-ghost {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1.05rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px solid var(--surface-border);
+    border-radius: 9999px;
+    transition:
+      color 0.25s ease,
+      background-color 0.25s ease,
+      border-color 0.25s ease;
+  }
+
+  .button-ghost:hover {
+    color: var(--foreground);
+    background: var(--surface-strong);
+    border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  }
+
+  .field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  .field-group > label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    color: var(--muted);
+  }
+
+  .field {
+    width: 100%;
+    padding: 0.6rem 0.85rem;
+    font: inherit;
+    font-size: 0.875rem;
+    color: var(--foreground);
+    background: var(--surface-strong);
+    border: 1px solid var(--rule);
+    border-radius: 0.75rem;
+    transition:
+      border-color 0.25s ease,
+      box-shadow 0.25s ease;
+  }
+
+  .field::placeholder {
+    color: color-mix(in srgb, var(--muted) 65%, transparent);
+  }
+
+  /* Replaces the global focus ring rather than adding a second one. */
+  .field:focus-visible {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
+  }
+
+  .pill {
+    display: inline-block;
+    padding: 0.3rem 0.7rem;
+    font-size: 0.78rem;
+    line-height: 1.1rem;
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 9999px;
+    transition:
+      color 0.25s ease,
+      border-color 0.25s ease;
+  }
+
+  .pill:hover {
+    color: var(--foreground);
+    border-color: var(--accent);
+  }
+
+  /* Weight 3 in the content file. */
+  .pill-core {
+    font-weight: 500;
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 11%, var(--surface));
+    border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  }
+
+  .pill-core:hover {
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 18%, var(--surface));
+  }
+
+  /* ==========================================================================
+   Cursor glow
+
+   Painted only once .has-cursor-glow is on the root.
+   ========================================================================== */
+
+  .cursor-glow {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    display: none;
+    pointer-events: none;
+    background: radial-gradient(
+      420px circle at var(--cursor-x, 50%) var(--cursor-y, 50%),
+      color-mix(in srgb, var(--accent) 13%, transparent),
+      transparent 68%
+    );
+  }
+
+  .has-cursor-glow .cursor-glow {
+    display: block;
+  }
+
+  /* ==========================================================================
+   Spotlight cards and link buttons
+   ========================================================================== */
+
+  .spotlight {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .spotlight::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border-radius: inherit;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    background: radial-gradient(
+      260px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+      color-mix(in srgb, var(--accent) 28%, transparent),
+      transparent 72%
+    );
+  }
+
+  .spotlight:hover::before {
+    opacity: 1;
+  }
+
+  /* Gradient over the whole card, masked down to the 1px ring: paint the
+     padding-box and border-box, then subtract one from the other. */
+  .spotlight::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    padding: 1px;
+    border-radius: inherit;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    background: radial-gradient(
+      320px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+      var(--accent),
+      transparent 62%
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+  }
+
+  .spotlight:hover::after {
+    opacity: 1;
+  }
+
+  /* Keeps card content above the highlight rather than beneath it. */
+  .spotlight > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Dashed and dimmed so it does not read as clickable. It is a span, so
+     there is nothing to click or tab to. */
+  .link-pending {
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px dashed var(--rule);
+    opacity: 0.72;
+    cursor: default;
+  }
+
+  .link-soon {
+    font-family: var(--font-mono), ui-monospace, monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    opacity: 0.8;
+  }
+
+  .link-button-arrow {
+    opacity: 0.35;
+    transition:
+      opacity 0.25s ease,
+      transform 0.25s ease;
+  }
+
+  .link-button:hover .link-button-arrow,
+  .link-button:focus-visible .link-button-arrow {
+    opacity: 1;
+    transform: translateX(2px);
+  }
+}
+
+/* ==========================================================================
+   Scroll reveal
+
+   Scoped to .js, so without JavaScript every section renders visible.
+   ========================================================================== */
+
+.js [data-reveal] {
+  opacity: 0;
+  transform: translateY(18px);
+}
+
+.js [data-reveal][data-visible="true"] {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  /* A nav jump lands instantly instead of sliding the whole page past. */
+  html {
+    scroll-behavior: auto;
+  }
+
+  .js [data-reveal] {
+    opacity: 1;
+    transform: none;
+  }
+}
