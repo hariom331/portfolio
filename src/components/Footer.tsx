@@ -20,9 +20,6 @@ export function Footer() {
           aria-hidden="true"
           className="bg-line-2 hidden h-3 w-px sm:block"
         />
-        <span className="text-faint hidden sm:inline">
-          next.js · tailwind css · static export
-        </span>
 
         <a
           href="#top"
@@ -33,7 +30,7 @@ export function Footer() {
       </div>
 
       <p className="text-faint mt-4 text-xs">
-        © {year} {site.name}. Built and deployed by hand
+        © {year} {site.name}. Built and deployed
         {github ? (
           <>
             {" — the source is on "}

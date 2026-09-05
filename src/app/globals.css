@@ -522,142 +522,232 @@ body {
   }
 
   /* ========================================================================
-     Terminal
+     Build loop
+
+     The three-beat cycle the work actually is — write it, build it, ship it —
+     drawn as the circle it is rather than as a line that has to snap back to
+     the start. No script behind it: every animation shares one duration and
+     differs only by delay, and equal durations stay in phase forever, so the
+     ring, the nodes and the log line can never drift apart no matter how long
+     the tab is left open.
+
+     A node lights when the arc reaches it and holds until its own cycle comes
+     round again, so the reset rolls through the three rather than clearing
+     them at once — the loop is never seen empty.
+
+     The cycle is four slots: one per stage, then a closing beat held while the
+     run sits complete. That is where 25% (one slot) and 75% (the arc closing
+     the circle) come from below; changing the stage count means changing both.
      ======================================================================== */
 
-  .term {
-    overflow: hidden;
-    background: color-mix(in srgb, var(--bg) 70%, var(--surface));
-    border: 1px solid var(--line);
-    border-radius: var(--r-panel);
+  .loop {
+    --cycle: 7.5s;
   }
 
-  .term-bar {
-    display: flex;
-    align-items: center;
-    gap: 0.45rem;
-    padding: 0.5rem 0.75rem;
-    background: color-mix(in srgb, var(--fg) 4%, transparent);
-    border-bottom: 1px solid var(--line);
+  .loop-spin {
+    display: inline-block;
+    animation: loop-spin var(--cycle) linear infinite;
   }
 
-  .term-dot {
-    width: 0.5rem;
-    height: 0.5rem;
-    background: var(--line-2);
-    border-radius: 9999px;
+  @keyframes loop-spin {
+    to {
+      rotate: 1turn;
+    }
   }
 
-  .term-title {
-    margin-left: 0.35rem;
+  .loop-dial {
+    position: relative;
+    width: 100%;
+    max-width: 19rem;
+    margin: 0 auto;
+  }
+
+  .loop-dial svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .loop-track-ring {
+    fill: none;
+    stroke: var(--line-2);
+    stroke-width: 1;
+  }
+
+  /* pathLength on the element normalises the circumference to 100, so the
+     dash values below are whole units rather than a computed 2πr. Rotated so
+     the arc starts at the twelve o'clock node instead of at three o'clock,
+     which is where SVG begins a circle. */
+  .loop-sweep {
+    fill: none;
+    stroke: var(--ok);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    transform: rotate(-90deg);
+    transform-box: view-box;
+    transform-origin: 50% 50%;
+    animation: loop-sweep var(--cycle) linear infinite;
+  }
+
+  @keyframes loop-sweep {
+    from {
+      stroke-dashoffset: 100;
+    }
+
+    75%,
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  /* The dot rides the leading edge of the arc. It is drawn at twelve o'clock
+     and the group is spun, so its position is one rotation rather than two
+     animated coordinates. */
+  .loop-orbit {
+    fill: var(--accent);
+    transform-box: view-box;
+    transform-origin: 50% 50%;
+    animation: loop-orbit var(--cycle) linear infinite;
+  }
+
+  @keyframes loop-orbit {
+    from {
+      transform: rotate(0deg);
+    }
+
+    75%,
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .loop-node {
+    fill: var(--surface);
+    stroke: var(--line-2);
+    stroke-width: 1.5;
+    animation: loop-node var(--cycle) linear infinite;
+  }
+
+  @keyframes loop-node {
+    from {
+      fill: var(--surface);
+      stroke: var(--line-2);
+    }
+
+    1%,
+    to {
+      fill: var(--ok);
+      stroke: var(--ok);
+    }
+  }
+
+  .loop-node-label {
     font-family: var(--font-mono);
-    font-size: 0.6875rem;
-    letter-spacing: 0.06em;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-anchor: middle;
+    dominant-baseline: middle;
+    fill: var(--faint);
+    animation: loop-node-label var(--cycle) linear infinite;
+  }
+
+  @keyframes loop-node-label {
+    from {
+      fill: var(--faint);
+    }
+
+    1%,
+    to {
+      fill: var(--fg);
+    }
+  }
+
+  .loop-centre {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    font-family: var(--font-mono);
+    pointer-events: none;
+  }
+
+  /* Reads top to bottom as one sentence — "shipping for" over the figure —
+     rather than across the dial, which would want a line long enough to reach
+     the ring on both sides. */
+  .loop-centre-value {
+    font-size: 1.125rem;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    color: var(--fg);
+  }
+
+  .loop-centre-unit {
+    font-size: 0.5625rem;
+    font-weight: 400;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
     color: var(--faint);
   }
 
-  .term-body {
-    padding: 0.9rem 0.85rem 1rem;
-    font-family: var(--font-mono);
-    font-size: 0.6875rem;
-    line-height: 1.7;
-    color: var(--muted);
-    /* A step line is a fixed-width record and does not reflow, so on a narrow
-       screen it scrolls inside the panel — the way it would in a real one.
-       The container's own overflow keeps that off the page. */
+  .loop-log {
+    position: relative;
+    margin-top: 1.4rem;
+    /* Exactly one line, which every line is: the panel cannot change height as
+       the log advances, so the section below it cannot be nudged down the page
+       four times a cycle. */
+    min-height: 1.15rem;
+    /* A command is a fixed-width record and does not reflow, so on a narrow
+       screen it scrolls inside the panel rather than wrapping to four lines
+       and pushing the panel open. Absolutely positioned lines still extend
+       this box's scroll width, because it is their containing block. */
     overflow-x: auto;
   }
 
-  @media (min-width: 640px) {
-    .term-body {
-      padding: 1.1rem 1.15rem 1.2rem;
-      font-size: 0.8125rem;
-    }
-  }
-
-  .term-row {
+  .loop-line {
+    position: absolute;
+    top: 0;
+    left: 0;
     display: flex;
     align-items: baseline;
-    gap: 0.55rem;
+    gap: 0.5rem;
     white-space: nowrap;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    line-height: 1.6;
+    color: var(--muted);
+    opacity: 0;
+    animation: loop-line var(--cycle) linear infinite;
   }
 
-  /* The command is the one line that does wrap, because that is what a shell
-     does with a command too long for the window. */
-  .term-cmd {
-    display: flex;
-    align-items: baseline;
-    gap: 0.55rem;
-  }
-
-  .term-cmd > span:last-child {
-    overflow-wrap: anywhere;
-  }
-
-  /* The dotted leader between a step and its result, as a package manager
-     prints it. Shrinks to nothing before the label wraps. */
-  .term-lead {
-    flex: 1 1 auto;
-    min-width: 0.75rem;
-    height: 0.75em;
-    border-bottom: 1px dotted color-mix(in srgb, var(--faint) 45%, transparent);
-    translate: 0 -0.15em;
-  }
-
-  .term-phase {
-    display: inline-block;
-    min-width: 4rem;
-    color: var(--accent);
-  }
-
-  @media (min-width: 640px) {
-    .term-phase {
-      min-width: 4.75rem;
-    }
-  }
-
-  .term-ok {
-    color: var(--ok);
-  }
-
-  /* The transcript plays itself, with no script behind it: each line drops in
-     and its result lands a beat later, so a step reads as running before it
-     reads as ok. The per-row delays are written in the markup. */
-  .term-in {
-    animation: line-in 0.3s ease-out backwards;
-  }
-
-  @keyframes line-in {
+  /* Held past its own slot so the next line has faded in before this one is
+     gone. Ending exactly on the slot boundary leaves a blank frame between
+     every pair, which reads as a dropped frame rather than as a dissolve. */
+  @keyframes loop-line {
     from {
       opacity: 0;
-      translate: 0 4px;
+      translate: 0 3px;
     }
-  }
 
-  .term-mark {
-    animation: mark-in 0.22s ease-out backwards;
-  }
-
-  @keyframes mark-in {
-    from {
-      opacity: 0;
+    3% {
+      opacity: 1;
+      translate: 0 0;
     }
-  }
 
-  /* Blinking block, the way a prompt sits waiting. Decorative, so it is
-     aria-hidden in the markup. */
-  .caret {
-    display: inline-block;
-    width: 0.52em;
-    height: 0.95em;
-    translate: 0 0.1em;
-    background: var(--accent);
-    animation: blink 1.15s steps(1) infinite;
-  }
+    24% {
+      opacity: 1;
+      translate: 0 0;
+    }
 
-  @keyframes blink {
-    50% {
+    28%,
+    to {
       opacity: 0;
+      translate: 0 0;
     }
   }
 
@@ -886,6 +976,15 @@ body {
      Metric tiles
      ======================================================================== */
 
+  /* Tracks come from how many tiles there are rather than from a fixed four,
+     so adding or dropping one closes the row up instead of leaving a hole
+     where it used to be. auto-fit collapses the tracks nothing lands in. */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+    gap: 0.625rem;
+  }
+
   .stat {
     padding: 0.9rem 0.85rem 0.95rem;
     background: color-mix(in srgb, var(--surface) 70%, transparent);
@@ -937,38 +1036,30 @@ body {
   /* ========================================================================
      Stack
 
-     Four panels, one per part of the estate, and inside each a split that is
-     the actual point of the section: the handful of things that are mine to
-     own, set large, over the longer run of things I have worked with. A flat
-     list of forty names says nothing about depth; this says it at a glance.
+     Four panels, one per part of the estate, and inside each a flat run of
+     names in one treatment. There is deliberately no prominence tier: dimming
+     two thirds of your own inventory reads as a list of the entries you are
+     apologising for, and the reader takes the hint. Every cell is the same
+     width and the same weight, so the section reads as a manifest of a
+     working account rather than a self-assessment.
      ======================================================================== */
 
-  .tier {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    font-family: var(--font-mono);
-    font-size: 0.625rem;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--faint);
+  /* Sized so the longest name in the content file still clears the cell's own
+     padding at the narrowest column this ever resolves to. */
+  .skill-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
+    gap: 0.4rem;
   }
 
-  .tier::after {
-    content: "";
-    flex: 1;
-    height: 1px;
-    background: var(--line);
-  }
-
-  /* Weight 3 in the content file: load-bearing. */
-  .core {
+  .skill {
     display: flex;
     align-items: center;
+    min-width: 0;
     gap: 0.55rem;
     padding: 0.42rem 0.65rem;
     font-family: var(--font-mono);
-    font-size: 0.875rem;
+    font-size: 0.75rem;
     color: var(--fg);
     background: color-mix(in srgb, var(--accent) 7%, transparent);
     border-left: 2px solid var(--accent);
@@ -978,15 +1069,33 @@ body {
       padding-left 0.18s ease;
   }
 
-  .core:hover {
+  .skill:hover {
     padding-left: 0.85rem;
     background: color-mix(in srgb, var(--accent) 14%, transparent);
   }
 
-  /* The filled square that marks a core entry, so the tier is legible without
-     relying on the tint alone. */
-  .core::before {
+  /* The masthead shortlist: same marker and rule as the inventory below, so
+     the two read as one system, but a step up in size and tint because this is
+     the row that gets scanned first. flex: none so a long name wraps to the
+     next line rather than being squeezed by its neighbours. */
+  .skill-lead {
+    flex: none;
+    padding: 0.52rem 0.8rem;
+    font-size: 0.875rem;
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+    border-left-width: 3px;
+  }
+
+  .skill-lead:hover {
+    padding-left: 0.95rem;
+    background: color-mix(in srgb, var(--accent) 18%, transparent);
+  }
+
+  /* The filled square that opens each entry, so the row is legible as a marked
+     item without relying on the tint alone. */
+  .skill::before {
     content: "";
+    flex: none;
     width: 0.3rem;
     height: 0.3rem;
     background: var(--accent);
@@ -1139,22 +1248,6 @@ body {
   .btn:focus-visible .btn-arrow {
     opacity: 1;
     translate: 0 0;
-  }
-
-  /* Dashed and dimmed so it does not read as clickable. It is a span, so
-     there is nothing to click or tab to. */
-  .btn-pending {
-    color: var(--faint);
-    background: transparent;
-    border: 1px dashed var(--line);
-    cursor: default;
-  }
-
-  .btn-soon {
-    font-size: 0.5625rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--warn);
   }
 
   .field-group {
@@ -1326,11 +1419,46 @@ body {
     translate: none;
   }
 
-  /* A blinking block and a breathing ring are exactly the kind of motion this
-     setting turns off. */
-  .caret,
+  /* A breathing ring is exactly the kind of motion this setting turns off. */
   .live-dot::after,
+  .loop-spin,
   [data-state="running"] .node {
     animation: none;
+  }
+
+  /* The build loop is the one thing on the page that says nothing at all when
+     its animation is cancelled: the ring would sit undrawn, every node would
+     sit pending and every stacked log line would sit at opacity zero. So it is
+     shown settled instead — the run complete, and only its closing line kept.
+     The orbiting dot has no settled position, so it goes. */
+  .loop-sweep {
+    stroke-dashoffset: 0;
+  }
+
+  .loop-orbit {
+    display: none;
+  }
+
+  .loop-node {
+    fill: var(--ok);
+    stroke: var(--ok);
+  }
+
+  .loop-node-label {
+    fill: var(--fg);
+  }
+
+  .loop-line {
+    display: none;
+  }
+
+  .loop-line:last-child {
+    display: flex;
+    position: static;
+    opacity: 1;
+  }
+
+  .loop-log {
+    min-height: 0;
   }
 }

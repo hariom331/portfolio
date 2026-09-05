@@ -55,9 +55,7 @@ const personJsonLd = {
     "@type": "PostalAddress",
     addressLocality: site.location,
   },
-  knowsAbout: site.stack.flatMap((group) =>
-    group.items.filter((item) => item.weight === 3).map((item) => item.name),
-  ),
+  knowsAbout: site.stack.flatMap((group) => group.items),
   sameAs: site.links
     .map((link) => link.href)
     .filter((href) => href.startsWith("https://")),

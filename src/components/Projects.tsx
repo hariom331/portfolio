@@ -7,9 +7,7 @@ import type { Project } from "@/content/types";
 // "https://github.com/hariom331/spender-guardian" -> "hariom331/spender-guardian",
 // so the card header reads the way the repository is actually addressed.
 function repoPath(project: Project): string {
-  const github = project.links.find(
-    (link) => link.kind === "github" && !link.pending,
-  );
+  const github = project.links.find((link) => link.kind === "github");
   if (github === undefined) return project.name;
 
   const path = github.href.replace(/^https?:\/\/github\.com\//, "");

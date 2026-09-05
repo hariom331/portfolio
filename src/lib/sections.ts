@@ -14,7 +14,7 @@ export const SECTIONS: readonly SectionMeta[] = [
   { id: "stack", label: "Stack", command: "terraform state list" },
   { id: "experience", label: "Experience", command: "git log --stat --prod" },
   { id: "projects", label: "Projects", command: "gh repo list --source" },
-  { id: "contact", label: "Contact", command: "curl -X POST /hire" },
+  { id: "contact", label: "Contact", command: "curl -X POST /engagements" },
 ];
 
 // Zero-padded position, or null for a section outside the run — the hero,

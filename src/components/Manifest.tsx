@@ -20,6 +20,10 @@ function pad(level: number): string {
   return "  ".repeat(level);
 }
 
+// Entries listed per group. The same for every group, so the manifest does not
+// reintroduce the ranking the stack section deliberately drops.
+const MANIFEST_ENTRIES = 3;
+
 interface EntryProps {
   readonly level: number;
   readonly name: string;
@@ -59,8 +63,6 @@ function Item({ level, value }: ItemProps) {
 // Every value is read out of the content file, so the manifest cannot drift
 // out of step with the rest of the page.
 export function Manifest() {
-  const role = site.experience.find((entry) => entry.since);
-
   return (
     <pre className="yaml" aria-label="Profile as a manifest">
       <code>
@@ -74,16 +76,16 @@ export function Manifest() {
         <Entry level={1} name="role" value={`"${site.role}"`} />
 
         {site.stack.map((group) => {
-          // Only the load-bearing entries; the full inventory is the next
-          // stage down the page.
-          const core = group.items.filter((item) => item.weight === 3);
-          if (core.length === 0) return null;
+          // The head of each group, so the manifest stays a summary. The full
+          // inventory is the next stage down the page.
+          const lead = group.items.slice(0, MANIFEST_ENTRIES);
+          if (lead.length === 0) return null;
 
           return (
             <Fragment key={group.label}>
               <Entry level={1} name={key(group.label)} />
-              {core.map((item) => (
-                <Item key={item.name} level={2} value={item.name} />
+              {lead.map((name) => (
+                <Item key={name} level={2} value={name} />
               ))}
             </Fragment>
           );
@@ -91,9 +93,7 @@ export function Manifest() {
 
         <Entry level={0} name="status" />
         <Entry level={1} name="phase" value="Running" />
-        {role?.since ? (
-          <Entry level={1} name="since" value={role.since} />
-        ) : null}
+        <Entry level={1} name="since" value={site.careerSince} />
         <Entry
           level={1}
           name="replicas"

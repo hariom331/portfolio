@@ -15,17 +15,14 @@ export interface ExternalLink {
   readonly href: string;
   readonly kind?: LinkKind;
   readonly srLabel?: string;
-  // Renders an inert "soon" chip instead of a link. href is ignored.
-  readonly pending?: boolean;
 }
 
 export interface Role {
   readonly company: string;
   readonly title: string;
   readonly period: string;
-  // ISO date the role started. Drives the live uptime readout; omit on a role
-  // that has ended and nothing counts up.
-  readonly since?: string;
+  // Still running, which is what earns the live dot on the card.
+  readonly current?: boolean;
   readonly location: string;
   readonly context: string;
   // The numbers the role is worth quoting for. They lead the card, ahead of
@@ -42,16 +39,19 @@ export interface Project {
   readonly links: readonly ExternalLink[];
 }
 
-export interface Skill {
-  readonly name: string;
-  // Prominence, not proficiency. 3 renders highlighted, 1 is peripheral.
-  readonly weight: 1 | 2 | 3;
-}
-
+// Every entry renders the same. There is no prominence field, because a tier
+// list of your own skills reads as a list of the ones you are apologising for.
 export interface StackGroup {
   readonly label: string;
-  readonly items: readonly Skill[];
+  readonly items: readonly string[];
 }
+
+// The shortlist the masthead leads with: the entries a hiring filter is
+// actually scanning for, in the order they carry weight. Curated by hand and
+// deliberately not derived from `stack` — the stack is the full inventory and
+// ranks nothing, this is the pitch and is nothing but a ranking. Keep it short.
+// A list of eight reads as a claim; a list of twenty reads as a hedge.
+export type Focus = readonly string[];
 
 // One tile in a role's impact readout. Kept to a short value so four sit on
 // one row on a phone.
@@ -68,17 +68,18 @@ export interface Credential {
   readonly value: string;
 }
 
-export interface DeployStep {
-  readonly phase: string;
-  readonly text: string;
+export interface PipelineStage {
+  readonly name: string;
+  readonly command: string;
   readonly result: string;
 }
 
-// The hero terminal transcript. Every line is a claim made elsewhere on the
-// page — this is a restatement of the record, not decoration.
-export interface Deploy {
-  readonly command: string;
-  readonly steps: readonly DeployStep[];
+// The loop under the estate readout: write it, build it, ship it. Three
+// stages, because that is the cycle the job is; a longer list turns a rhythm
+// into a diagram.
+export interface Pipeline {
+  readonly stages: readonly PipelineStage[];
+  // The beat at the end, held while the run sits complete before it repeats.
   readonly result: string;
 }
 
@@ -95,17 +96,25 @@ export interface SiteContent {
   readonly name: string;
   readonly role: string;
   readonly tagline: string;
+  readonly focus: Focus;
   readonly location: string;
   // Home AWS region, used as the locality label in the console chrome.
   readonly region: string;
   // Absolute origin, used for canonical and Open Graph URLs.
   readonly url: string;
   readonly email: string;
+  // ISO date of the first professional work, internship included, which is not
+  // the same as the start of the current role. Only the manifest reads it.
+  readonly careerSince: string;
+  // Total time shipping, written out rather than counted from careerSince: the
+  // masthead states a figure instead of running a clock, so this is the one
+  // place it is set. Keep it in step with careerSince by hand.
+  readonly experienceYears: string;
   readonly photo: Photo | null;
   readonly links: readonly ExternalLink[];
   readonly positioning: string;
   readonly philosophy: string;
-  readonly deploy: Deploy;
+  readonly pipeline: Pipeline;
   readonly credentials: readonly Credential[];
   readonly stack: readonly StackGroup[];
   readonly projects: readonly Project[];

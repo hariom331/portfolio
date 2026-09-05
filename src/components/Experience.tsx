@@ -7,13 +7,13 @@ export function Experience() {
     <Section
       id="experience"
       title="Experience"
-      lead="One engagement, owned end to end. The numbers lead, because they are what changed by my being on it; the detail underneath is what backs them up."
+      lead="Where I have shipped, most recent first. The numbers lead, because they are what changed by my being there; the detail underneath is what backs them up."
     >
       <div className="space-y-5">
         {site.experience.map((role) => (
           <Lit key={`${role.company}-${role.period}`}>
             <div className="panel-head">
-              {role.since ? (
+              {role.current ? (
                 <span aria-hidden="true" className="live-dot" />
               ) : null}
               <span className="text-fg">{role.company}</span>
@@ -33,10 +33,10 @@ export function Experience() {
                 {role.context}
               </p>
 
-              {/* The four numbers a recruiter is scanning for, on the role
-                  that earned them. */}
+              {/* The numbers a recruiter is scanning for, on the role that
+                  earned them. */}
               {role.metrics.length > 0 ? (
-                <dl className="mt-6 grid grid-cols-2 gap-2.5 lg:grid-cols-4">
+                <dl className="stat-grid mt-6">
                   {role.metrics.map((metric) => (
                     // The number leads visually, but the label is still the
                     // term the value describes, so the order is swapped in CSS

@@ -16,61 +16,35 @@ function pad(count: number): string {
 }
 
 export function Stack() {
-  const groups = site.stack.map((group) => ({
-    label: group.label,
-    // Weight 3 is the claim worth making; everything else is a run of names.
-    core: group.items.filter((item) => item.weight === 3),
-    rest: group.items.filter((item) => item.weight !== 3),
-  }));
-
-  const owned = groups.reduce((sum, group) => sum + group.core.length, 0);
+  const total = site.stack.reduce((sum, group) => sum + group.items.length, 0);
 
   return (
     <Section
       id="stack"
       title="Stack"
-      lead="Grouped the way the account is. The highlighted entries are the ones I own end to end — provisioned, broken and fixed by me. The rest I have worked with and would not claim more than that."
+      lead="Grouped the way the account is. Everything on this list is something I have run in production — provisioned, broken and fixed. There is no aspirational tier."
     >
-      <div className="grid gap-4 lg:grid-cols-2">
-        {groups.map((group) => (
+      {/* items-start, not stretch: the groups differ enough in size that a
+          stretched panel leaves a hole inside its own border, which reads as
+          content that failed to load. Ragged bottoms read as a card grid. */}
+      <div className="grid items-start gap-4 lg:grid-cols-2">
+        {site.stack.map((group) => (
           <Lit key={group.label} className="flex flex-col">
             <div className="panel-head">
               <span className="normal-case">{key(group.label)}</span>
               <span className="panel-head-end tnum">
-                {pad(group.core.length)} core / {pad(group.rest.length)}
+                {pad(group.items.length)} resources
               </span>
             </div>
 
-            <div className="flex flex-1 flex-col gap-4 p-4 sm:p-5">
-              <ul className="space-y-1.5">
-                {group.core.map((item) => (
-                  <li key={item.name} className="core">
-                    {item.name}
+            <div className="flex flex-1 flex-col p-4 sm:p-5">
+              <ul className="skill-grid">
+                {group.items.map((name) => (
+                  <li key={name} className="skill">
+                    {name}
                   </li>
                 ))}
               </ul>
-
-              {/* Tight under the core rows rather than pushed to the panel
-                  floor: the panels are stretched to a common height by the
-                  grid, and pinning this to the bottom would open a hole in the
-                  middle of the shorter ones. */}
-              {group.rest.length > 0 ? (
-                <div>
-                  <p className="tier mb-2.5">also</p>
-                  <ul className="flex flex-wrap gap-1.5">
-                    {group.rest.map((item) => (
-                      <li
-                        key={item.name}
-                        // Weight 2 is a working tool and weight 1 is an
-                        // acquaintance; the second sits back a step.
-                        className={`chip ${item.weight === 1 ? "opacity-65" : ""}`.trim()}
-                      >
-                        {item.name}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ) : null}
             </div>
           </Lit>
         ))}
@@ -81,7 +55,7 @@ export function Stack() {
           ▸
         </span>
         <span className="tnum">
-          {owned} owned end to end, across {groups.length} parts of the estate
+          {total} resources across {site.stack.length} parts of the estate
         </span>
       </p>
     </Section>

@@ -1,6 +1,5 @@
-import { Clock } from "@/components/Clock";
+import { BuildLoop } from "@/components/BuildLoop";
 import { CopyEmail } from "@/components/CopyEmail";
-import { DeployTerminal } from "@/components/DeployTerminal";
 import { LinkIcon } from "@/components/LinkIcon";
 import { site } from "@/content/site";
 import { anchorProps } from "@/lib/links";
@@ -33,10 +32,6 @@ export function Hero() {
             </span>
             <span aria-hidden="true" className="bg-line-2 h-3 w-px" />
             <span>{site.location}</span>
-            <span aria-hidden="true" className="bg-line-2 h-3 w-px" />
-            <span className="text-accent">{site.region}</span>
-            <span aria-hidden="true" className="bg-line-2 h-3 w-px" />
-            <Clock />
           </p>
 
           <h1
@@ -52,18 +47,22 @@ export function Hero() {
             ) : null}
           </h1>
 
-          <p className="mt-6 max-w-xl">
-            <span className="text-accent font-mono text-sm font-medium tracking-tight">
-              {site.role}
-            </span>
-            <span
-              className="text-faint mx-2 font-mono text-sm"
-              aria-hidden="true"
-            >
-              /
-            </span>
-            <span className="text-muted font-mono text-sm">{site.tagline}</span>
+          <p className="text-accent mt-6 font-mono text-sm font-medium tracking-tight">
+            {site.role}
           </p>
+
+          {/* The keywords a hiring filter is scanning for, set as the loudest
+              thing under the name. The full inventory is the stack section and
+              ranks nothing; this is the shortlist and is nothing but a rank.
+              site.tagline said the same words in prose and now only feeds the
+              meta description, so the two do not compete here. */}
+          <ul aria-label="Core tooling" className="mt-5 flex flex-wrap gap-1.5">
+            {site.focus.map((name) => (
+              <li key={name} className="skill skill-lead">
+                {name}
+              </li>
+            ))}
+          </ul>
 
           {/* The record, as the badges across the top of a README. */}
           <ul aria-label="Credentials" className="mt-7 flex flex-wrap gap-2">
@@ -108,7 +107,12 @@ export function Hero() {
           </div>
         </div>
 
-        <DeployTerminal />
+        {/* Centred rather than top-aligned: it is now the only thing in this
+            column and the masthead beside it is taller, so pinning it to the
+            top would hang it off the shoulder of the name. */}
+        <div className="lg:self-center">
+          <BuildLoop />
+        </div>
       </div>
     </section>
   );

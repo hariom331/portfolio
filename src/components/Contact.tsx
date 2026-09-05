@@ -13,6 +13,16 @@ import { anchorProps } from "@/lib/links";
 // Keeps the composed mailto well inside what mail clients accept.
 const MESSAGE_MAX = 1200;
 
+// The panel states what a message has to contain rather than what the sender
+// is welcome to send. A page that lists who it will hear from is applying; a
+// page that lists what it is looking for is choosing, and the reader ends up
+// checking themselves against the list instead of deciding whether to bother.
+const WORTH_A_MESSAGE: readonly string[] = [
+  "An AWS estate that needs an owner rather than a ticket queue.",
+  "Migration or modernisation work with real constraints attached.",
+  "A team that ships infrastructure through review, not through the console.",
+];
+
 // A static export has no endpoint to POST to. The form composes a mailto and
 // hands it to the visitor's own mail client — which is also why the panel says
 // so rather than pretending to send. To move to a real endpoint, swap the body
@@ -48,13 +58,13 @@ export function Contact() {
     <Section
       id="contact"
       title="Contact"
-      lead="Recruiters hiring for cloud, DevOps or backend roles, and engineers who want to compare notes on AWS migrations — both welcome."
+      lead="I am mid-programme on a migration I own, so I read more than I reply to. If the estate on your side needs someone to answer for it, that is worth a message — and it will get one."
     >
       <div className="grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
         <Lit className="flex flex-col">
           <div className="panel-head">
             <span aria-hidden="true" className="live-dot" />
-            <span>open channel</span>
+            <span>direct line</span>
           </div>
 
           <div className="panel-body flex flex-1 flex-col">
@@ -66,6 +76,23 @@ export function Contact() {
               {site.email}
             </a>
 
+            <div className="border-line mt-6 border-t pt-5">
+              <p className="mono-label">Worth a message</p>
+              <ul className="mt-3 space-y-2.5">
+                {WORTH_A_MESSAGE.map((line) => (
+                  <li
+                    key={line}
+                    className="text-muted flex gap-2.5 text-sm leading-relaxed"
+                  >
+                    <span aria-hidden="true" className="text-accent font-mono">
+                      →
+                    </span>
+                    <span>{line}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
             <dl className="border-line mt-6 space-y-3 border-t pt-5">
               <div className="flex items-baseline gap-3">
                 <dt className="mono-label w-20 shrink-0">Based</dt>
@@ -74,12 +101,6 @@ export function Contact() {
               <div className="flex items-baseline gap-3">
                 <dt className="mono-label w-20 shrink-0">Region</dt>
                 <dd className="text-muted font-mono text-sm">{site.region}</dd>
-              </div>
-              <div className="flex items-baseline gap-3">
-                <dt className="mono-label w-20 shrink-0">Notice</dt>
-                <dd className="text-muted text-sm">
-                  Open to remote and hybrid
-                </dd>
               </div>
             </dl>
 
@@ -103,18 +124,24 @@ export function Contact() {
 
         <Lit>
           <div className="panel-head">
-            <span>compose</span>
+            <span>new request</span>
             <span className="panel-head-end">mailto</span>
           </div>
 
           <div className="panel-body">
-            {/* The request this form is really making, spelled out. */}
+            {/* Spelled out as a request against his service rather than an
+                application to yours: /hire pointed the wrong way, and the
+                Expect line answers the reader's real question before they can
+                ask it. */}
             <pre className="text-faint mb-5 font-mono text-[0.6875rem] leading-relaxed">
               <code>
-                <span className="text-accent">POST</span> /hire HTTP/1.1{"\n"}
+                <span className="text-accent">POST</span> /engagements HTTP/1.1
+                {"\n"}
                 Host: {new URL(site.url).host}
                 {"\n"}
                 Content-Type: text/plain
+                {"\n"}
+                Expect: 200 within 24h
               </code>
             </pre>
 
@@ -128,7 +155,7 @@ export function Contact() {
                     type="text"
                     required
                     autoComplete="name"
-                    placeholder="Ada Lovelace"
+                    placeholder="Hariom Joshi"
                     className="field"
                   />
                 </div>
@@ -141,7 +168,7 @@ export function Contact() {
                     type="email"
                     required
                     autoComplete="email"
-                    placeholder="ada@example.com"
+                    placeholder="hariom@example.com"
                     className="field"
                   />
                 </div>
@@ -155,14 +182,14 @@ export function Contact() {
                   required
                   rows={5}
                   maxLength={MESSAGE_MAX}
-                  placeholder="The role, the team, or the thing you want to compare notes on."
+                  placeholder="The team, the estate, and what breaks when nobody owns it."
                   className="field resize-y"
                 />
               </div>
 
               <div className="flex flex-wrap items-center gap-4">
                 <button type="submit" className="btn btn-primary">
-                  send request
+                  send message
                   <span aria-hidden="true">→</span>
                 </button>
 
