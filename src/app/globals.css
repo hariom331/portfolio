@@ -1,139 +1,128 @@
 @import "tailwindcss";
 
 /* ==========================================================================
-   Design tokens
+   CONTROL PLANE — design tokens
+
+   One theme. The page is a console and a console is dark, so there is no
+   light mapping to keep in step and no toggle to ship.
+
+   Colour carries meaning rather than decoration:
+
+     accent (amber)  the operator's own signal — headings, actions, focus
+     ok     (green)  a thing that passed
+     info   (blue)   a thing that is merely informational
+     warn   (yellow) a thing not finished yet
+
+   Nothing else is coloured. Depth comes from three background steps and two
+   hairline weights, never from shadow or blur.
    ========================================================================== */
 
-/* Defined once as light-* / dark-* pairs, then mapped onto the active names. */
 :root {
-  --light-background: #f7f7fb;
-  --light-foreground: #0f0f14;
-  --light-muted: #55555f;
-  --light-surface: rgba(255, 255, 255, 0.66);
-  --light-surface-strong: rgba(255, 255, 255, 0.82);
-  --light-surface-border: rgba(255, 255, 255, 0.75);
-  --light-rule: rgba(15, 15, 20, 0.08);
-  --light-accent: #4f46e5;
-  --light-accent-2: #0284c7;
-  --light-accent-3: #9333ea;
-  --light-shadow-card:
-    0 1px 2px rgba(15, 15, 20, 0.04), 0 8px 24px -12px rgba(15, 15, 20, 0.16);
-  --light-shadow-card-hover:
-    0 1px 2px rgba(15, 15, 20, 0.05), 0 20px 44px -18px rgba(79, 70, 229, 0.35);
-  --light-mesh-opacity: 0.5;
+  /* Cold graphite, bone, signal amber. */
+  --bg: #0a0c0f;
+  --surface: #0f1217;
+  --raise: #161b22;
+  --fg: #e9ecef;
+  --muted: #98a1ac;
+  --faint: #7b8492;
+  --line: #1c222b;
+  --line-2: #2b333e;
+  --grid: rgba(233, 236, 239, 0.04);
+  --accent: #ff9d3d;
+  --accent-ink: #180d00;
+  --ok: #3fd68c;
+  --info: #63a8ff;
+  --warn: #ffc94a;
+  --danger: #ff6b5e;
 
-  --dark-background: #07070c;
-  --dark-foreground: #f0f0f5;
-  --dark-muted: #9d9daa;
-  --dark-surface: rgba(255, 255, 255, 0.045);
-  --dark-surface-strong: rgba(255, 255, 255, 0.07);
-  --dark-surface-border: rgba(255, 255, 255, 0.1);
-  --dark-rule: rgba(255, 255, 255, 0.09);
-  --dark-accent: #8b8cf9;
-  --dark-accent-2: #38bdf8;
-  --dark-accent-3: #c084fc;
-  --dark-shadow-card:
-    0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 32px -14px rgba(0, 0, 0, 0.7);
-  --dark-shadow-card-hover:
-    0 1px 2px rgba(0, 0, 0, 0.4), 0 24px 52px -20px rgba(139, 140, 249, 0.45);
-  --dark-mesh-opacity: 0.42;
+  /* The two backdrop films: grain over everything, and the amber lattice that
+     tracks the pointer. */
+  --grain: 0.045;
+  --trace: 0.42;
 
-  /* Light is the default mapping. */
-  --background: var(--light-background);
-  --foreground: var(--light-foreground);
-  --muted: var(--light-muted);
-  --surface: var(--light-surface);
-  --surface-strong: var(--light-surface-strong);
-  --surface-border: var(--light-surface-border);
-  --rule: var(--light-rule);
-  --accent: var(--light-accent);
-  --accent-2: var(--light-accent-2);
-  --accent-3: var(--light-accent-3);
-  --shadow-card: var(--light-shadow-card);
-  --shadow-card-hover: var(--light-shadow-card-hover);
-  --mesh-opacity: var(--light-mesh-opacity);
+  /* Engineered, not rounded. */
+  --r-panel: 4px;
+  --r-chip: 3px;
 
-  color-scheme: light;
-}
-
-/* System preference, unless light was explicitly chosen. */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --background: var(--dark-background);
-    --foreground: var(--dark-foreground);
-    --muted: var(--dark-muted);
-    --surface: var(--dark-surface);
-    --surface-strong: var(--dark-surface-strong);
-    --surface-border: var(--dark-surface-border);
-    --rule: var(--dark-rule);
-    --accent: var(--dark-accent);
-    --accent-2: var(--dark-accent-2);
-    --accent-3: var(--dark-accent-3);
-    --shadow-card: var(--dark-shadow-card);
-    --shadow-card-hover: var(--dark-shadow-card-hover);
-    --mesh-opacity: var(--dark-mesh-opacity);
-
-    color-scheme: dark;
-  }
-}
-
-/* Explicit choice always wins over the system preference. */
-:root[data-theme="dark"] {
-  --background: var(--dark-background);
-  --foreground: var(--dark-foreground);
-  --muted: var(--dark-muted);
-  --surface: var(--dark-surface);
-  --surface-strong: var(--dark-surface-strong);
-  --surface-border: var(--dark-surface-border);
-  --rule: var(--dark-rule);
-  --accent: var(--dark-accent);
-  --accent-2: var(--dark-accent-2);
-  --accent-3: var(--dark-accent-3);
-  --shadow-card: var(--dark-shadow-card);
-  --shadow-card-hover: var(--dark-shadow-card-hover);
-  --mesh-opacity: var(--dark-mesh-opacity);
+  /* Backdrop lattice. Shared by the static grid and the pointer overlay, so
+     the two always line up. */
+  --grid-size: 64px;
 
   color-scheme: dark;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-raise: var(--raise);
+  --color-fg: var(--fg);
   --color-muted: var(--muted);
-  --color-rule: var(--rule);
+  --color-faint: var(--faint);
+  --color-line: var(--line);
+  --color-line-2: var(--line-2);
   --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-ok: var(--ok);
+  --color-info: var(--info);
+  --color-warn: var(--warn);
+  --color-danger: var(--danger);
 
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Fallbacks live here rather than at each use site, so the font-sans and
+     font-mono utilities carry them too. */
+  --font-sans: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-terminal), ui-monospace, SFMono-Regular, monospace;
 }
 
 /* ==========================================================================
    Base
    ========================================================================== */
 
-/* Nav links are hash jumps, so the scroll is animated. Turned off in the
-   reduced-motion block at the foot of this file. */
 html {
   scroll-behavior: smooth;
+  /* Nothing on the page scrolls sideways; this stops a wide panel from
+     dragging the whole document with it on a phone.
+
+     clip, not hidden: `overflow-x: hidden` forces the used overflow-y to auto,
+     which makes the root element a scroll container. Every IntersectionObserver
+     on the page watches the implicit viewport root, and against a scrolling
+     root they stop firing — which silently kills the stage rail, the reveals
+     and the active nav link. clip does the same job without that. */
+  overflow-x: clip;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-synthesis-weight: none;
 }
 
 :focus-visible {
   outline: 2px solid var(--accent);
-  outline-offset: 3px;
-  border-radius: 4px;
+  outline-offset: 2px;
+  border-radius: 0;
+}
+
+::selection {
+  color: var(--accent-ink);
+  background: var(--accent);
+}
+
+/* Every readout on this page is a number in a column, so the digits are set
+   to one width. */
+.tnum {
+  font-variant-numeric: tabular-nums;
 }
 
 /* ==========================================================================
-   Gradient mesh backdrop
+   Backdrop
+
+   Four fixed, inert layers: a hairline lattice, an amber bloom behind the
+   masthead, a colder one low on the left, and a film of grain that keeps the
+   flat fills from reading as vector art.
    ========================================================================== */
 
-.mesh {
+.backdrop {
   position: fixed;
   inset: 0;
   z-index: -1;
@@ -141,537 +130,1270 @@ body {
   pointer-events: none;
 }
 
-.mesh-blob {
+.backdrop-grid {
   position: absolute;
-  border-radius: 9999px;
-  opacity: var(--mesh-opacity);
-  filter: blur(72px);
-  will-change: transform;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, var(--grid) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid) 1px, transparent 1px);
+  background-size: var(--grid-size) var(--grid-size);
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    #000 0%,
+    #000 40%,
+    transparent 88%
+  );
+  mask-image: linear-gradient(to bottom, #000 0%, #000 40%, transparent 88%);
 }
 
-.mesh-blob-1 {
-  top: -14rem;
-  left: -10rem;
-  width: 42rem;
-  height: 42rem;
-  background: radial-gradient(circle, var(--accent) 0%, transparent 68%);
-  animation: drift-1 26s ease-in-out infinite alternate;
+/* Off the top-right corner, so the masthead has warmth on one side and the
+   text column stays clean. */
+.backdrop-bloom {
+  position: absolute;
+  top: -22rem;
+  right: -14rem;
+  width: 48rem;
+  height: 48rem;
+  opacity: 0.16;
+  background: radial-gradient(
+    circle at center,
+    var(--accent) 0%,
+    transparent 62%
+  );
 }
 
-.mesh-blob-2 {
-  top: 8rem;
-  right: -16rem;
-  width: 38rem;
-  height: 38rem;
-  background: radial-gradient(circle, var(--accent-2) 0%, transparent 68%);
-  animation: drift-2 31s ease-in-out infinite alternate;
-}
-
-.mesh-blob-3 {
-  bottom: -18rem;
-  left: 22%;
+.backdrop-bloom-2 {
+  position: absolute;
+  top: 46%;
+  left: -20rem;
   width: 40rem;
   height: 40rem;
-  background: radial-gradient(circle, var(--accent-3) 0%, transparent 68%);
-  animation: drift-3 37s ease-in-out infinite alternate;
+  opacity: 0.1;
+  background: radial-gradient(
+    circle at center,
+    var(--info) 0%,
+    transparent 60%
+  );
 }
 
-@keyframes drift-1 {
-  to {
-    transform: translate3d(7rem, 4rem, 0) scale(1.12);
-  }
+.backdrop-grain {
+  position: absolute;
+  inset: 0;
+  opacity: var(--grain);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-@keyframes drift-2 {
-  to {
-    transform: translate3d(-6rem, 6rem, 0) scale(0.9);
-  }
+/* The same lattice in accent, revealed in a disc under the pointer. Painted
+   only once the pointer proves to be a fine one. */
+.cursor-grid {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  display: none;
+  opacity: var(--trace);
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, var(--accent) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--accent) 1px, transparent 1px);
+  background-size: var(--grid-size) var(--grid-size);
+  -webkit-mask-image: radial-gradient(
+    220px circle at var(--cursor-x, 50%) var(--cursor-y, 50%),
+    #000,
+    transparent 70%
+  );
+  mask-image: radial-gradient(
+    220px circle at var(--cursor-x, 50%) var(--cursor-y, 50%),
+    #000,
+    transparent 70%
+  );
 }
 
-@keyframes drift-3 {
-  to {
-    transform: translate3d(5rem, -5rem, 0) scale(1.08);
-  }
+.has-cursor-glow .cursor-grid {
+  display: block;
 }
 
 /* Wrapped in the components layer so utilities in the markup still win. An
-   unlayered .glass rule would silently beat rounded-full on the same element. */
+   unlayered .panel rule would silently beat a radius utility on the same
+   element. */
 @layer components {
-  /* ==========================================================================
-   Components
-   ========================================================================== */
+  /* ========================================================================
+     Type roles
+     ======================================================================== */
 
-  .glass {
-    background: var(--surface);
-    border: 1px solid var(--surface-border);
-    border-radius: 1rem;
-    box-shadow: var(--shadow-card);
-    backdrop-filter: blur(16px) saturate(140%);
+  /* Small caps in mono: every label, key, phase and unit on the page. */
+  .mono-label {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--faint);
   }
 
-  .glass-hover {
-    transition:
-      box-shadow 0.35s ease,
-      transform 0.35s ease,
-      background-color 0.35s ease;
+  /* Tightened hard: the masthead is the one place the display face runs big
+     enough for default tracking to look loose. */
+  .display {
+    font-weight: 700;
+    line-height: 0.92;
+    letter-spacing: -0.035em;
   }
 
-  .glass-hover:hover {
-    background: var(--surface-strong);
-    box-shadow: var(--shadow-card-hover);
-    transform: translateY(-2px);
+  /* Half the masthead is drawn rather than filled, which is what makes it a
+     masthead and not a heading. Guarded, because a browser without text-stroke
+     would render a transparent fill as nothing at all. */
+  .outline-word {
+    color: var(--fg);
   }
 
-  /* color is set first so the text survives without background-clip. */
-  .gradient-text {
-    color: var(--foreground);
-  }
-
-  @supports (background-clip: text) or (-webkit-background-clip: text) {
-    .gradient-text {
-      background-image: linear-gradient(
-        100deg,
-        var(--accent-3) 0%,
-        var(--accent) 42%,
-        var(--accent-2) 100%
-      );
-      -webkit-background-clip: text;
-      background-clip: text;
+  @supports (-webkit-text-stroke: 1px currentColor) {
+    .outline-word {
       color: transparent;
+      -webkit-text-stroke: 1.5px var(--fg);
     }
   }
 
-  /* ==========================================================================
-   Top bar
-   ========================================================================== */
+  /* ========================================================================
+     Panels
+     ======================================================================== */
 
-  .nav-shell {
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--r-panel);
+  }
+
+  /* Title strip over a panel body, the way a row in a service list carries
+     its own header. */
+  .panel-head {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.55rem 0.9rem;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--faint);
+    background: color-mix(in srgb, var(--fg) 3%, transparent);
+    border-bottom: 1px solid var(--line);
+    border-radius: calc(var(--r-panel) - 1px) calc(var(--r-panel) - 1px) 0 0;
+  }
+
+  .panel-head-end {
+    margin-left: auto;
+    letter-spacing: 0.1em;
+  }
+
+  .panel-body {
+    padding: 1.1rem 1.1rem 1.25rem;
+  }
+
+  @media (min-width: 640px) {
+    .panel-body {
+      padding: 1.4rem 1.5rem 1.55rem;
+    }
+  }
+
+  /* A card that answers the pointer: the top rule lights where the cursor is
+     and a hairline frame comes up around the whole thing. The position
+     arrives as --spot-x from the hover handler. */
+  .lit {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .lit::before,
+  .lit::after {
+    content: "";
+    position: absolute;
+    z-index: 2;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+
+  .lit::before {
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 1px;
+    background: radial-gradient(
+      160px circle at var(--spot-x, 50%) 50%,
+      var(--accent),
+      transparent 75%
+    );
+  }
+
+  .lit::after {
+    inset: 0;
+    border: 1px solid color-mix(in srgb, var(--accent) 38%, transparent);
+    border-radius: inherit;
+  }
+
+  .lit:hover::before,
+  .lit:hover::after,
+  .lit:focus-within::before,
+  .lit:focus-within::after {
+    opacity: 1;
+  }
+
+  /* Keeps card content above the frame rather than beneath it. */
+  .lit > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ========================================================================
+     Console bar
+     ======================================================================== */
+
+  .bar {
     position: sticky;
     top: 0;
     z-index: 40;
-    /* Translucent rather than solid, so the mesh still moves behind it. */
-    background: color-mix(in srgb, var(--background) 78%, transparent);
-    border-bottom: 1px solid var(--rule);
-    backdrop-filter: blur(14px) saturate(150%);
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    border-bottom: 1px solid var(--line);
+    backdrop-filter: blur(12px) saturate(1.3);
   }
 
-  .nav-monogram {
+  /* Progress through the run, read as a build bar across the top of the
+     console. Width is written by the scroll handler. */
+  .bar-progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 2px;
+    width: var(--progress, 0%);
+    background: linear-gradient(
+      to right,
+      color-mix(in srgb, var(--accent) 40%, transparent),
+      var(--accent)
+    );
+  }
+
+  .brand-mark {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 2rem;
-    height: 2rem;
-    font-family: var(--font-mono), ui-monospace, monospace;
-    font-size: 0.72rem;
-    letter-spacing: 0.04em;
-    /* White on a saturated gradient in both themes, so not a token. */
-    color: #fff;
-    background-image: linear-gradient(
-      135deg,
-      var(--accent-3),
-      var(--accent) 55%,
-      var(--accent-2)
-    );
-    border-radius: 0.65rem;
-    box-shadow: var(--shadow-card);
+    width: 1.9rem;
+    height: 1.9rem;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    color: var(--accent-ink);
+    background: var(--accent);
+    border-radius: var(--r-chip);
   }
 
-  .nav-link {
-    position: relative;
-    padding: 0.4rem 0.75rem;
-    font-size: 0.8125rem;
+  /* user@host, the way a shell prompt names where you are. */
+  .ctx {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: -0.01em;
     color: var(--muted);
-    border-radius: 9999px;
+    white-space: nowrap;
+  }
+
+  .ctx b {
+    font-weight: 500;
+    color: var(--fg);
+  }
+
+  .ctx i {
+    font-style: normal;
+    color: var(--accent);
+  }
+
+  .bar-link {
+    position: relative;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    padding: 0.35rem 0.6rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--muted);
+    border-radius: var(--r-chip);
     transition:
-      color 0.25s ease,
-      background-color 0.25s ease;
+      color 0.18s ease,
+      background-color 0.18s ease;
   }
 
-  .nav-link:hover {
-    color: var(--foreground);
-    background: var(--surface);
+  .bar-link em {
+    font-style: normal;
+    font-size: 0.625rem;
+    color: var(--faint);
+    transition: color 0.18s ease;
   }
 
-  .nav-link.is-active {
-    color: var(--foreground);
+  .bar-link:hover {
+    color: var(--fg);
+    background: color-mix(in srgb, var(--fg) 5%, transparent);
   }
 
-  /* Desktop only: in the mobile panel a short underline would read as an
-     underlined word rather than a marker. */
-  @media (min-width: 768px) {
-    .nav-link.is-active::after {
+  .bar-link.is-active {
+    color: var(--accent);
+  }
+
+  .bar-link.is-active em {
+    color: color-mix(in srgb, var(--accent) 70%, transparent);
+  }
+
+  /* Desktop only: under a single row in the mobile sheet a rule would read as
+     an underlined word rather than a position marker. */
+  @media (min-width: 1024px) {
+    .bar-link.is-active::after {
       content: "";
       position: absolute;
-      bottom: 0.1rem;
-      left: 50%;
-      width: 1.1rem;
-      height: 2px;
-      translate: -50% 0;
+      right: 0.6rem;
+      bottom: 0.05rem;
+      left: 0.6rem;
+      height: 1px;
       background: var(--accent);
-      border-radius: 9999px;
     }
   }
 
-  .nav-icon-button {
-    width: 2.25rem;
-    height: 2.25rem;
+  .icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.1rem;
+    height: 2.1rem;
     color: var(--muted);
-    background: var(--surface);
-    border: 1px solid var(--surface-border);
-    border-radius: 9999px;
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: var(--r-chip);
     transition:
-      color 0.25s ease,
-      background-color 0.25s ease,
-      border-color 0.25s ease;
+      color 0.18s ease,
+      background-color 0.18s ease,
+      border-color 0.18s ease;
   }
 
-  .nav-icon-button:hover {
-    color: var(--foreground);
-    background: var(--surface-strong);
-    border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  .icon-btn:hover {
+    color: var(--fg);
+    background: var(--raise);
+    border-color: var(--line-2);
+  }
+
+  /* The ⌘K affordance. It reads as a key, so it is drawn as one. */
+  .kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.3rem;
+    padding: 0.05rem 0.3rem;
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    line-height: 1.15rem;
+    color: var(--faint);
+    background: color-mix(in srgb, var(--fg) 5%, transparent);
+    border: 1px solid var(--line);
+    border-bottom-width: 2px;
+    border-radius: var(--r-chip);
   }
 
   /* Separate elements, so each transform is a plain rotate. */
-  .nav-burger {
+  .burger {
     position: relative;
     display: block;
     width: 1rem;
     height: 0.75rem;
   }
 
-  .nav-burger > span {
+  .burger > span {
     position: absolute;
     left: 0;
     width: 100%;
     height: 1.5px;
     background: currentColor;
-    border-radius: 9999px;
     /* Tailwind writes rotate and translate as individual properties, so
        transitioning transform alone would animate nothing. */
     transition:
-      rotate 0.25s ease,
-      translate 0.25s ease;
+      rotate 0.2s ease,
+      translate 0.2s ease;
   }
 
-  .nav-burger > span:first-child {
+  .burger > span:first-child {
     top: 2px;
   }
 
-  .nav-burger > span:last-child {
+  .burger > span:last-child {
     bottom: 2px;
   }
 
-  /* Chosen in CSS, not React, so the first paint is correct. Each theme
-     shows the icon for the theme the button switches to. */
-  .theme-icon-sun {
-    display: none;
+  /* ========================================================================
+     Build loop
+
+     The three-beat cycle the work actually is — write it, build it, ship it —
+     drawn as the circle it is rather than as a line that has to snap back to
+     the start. No script behind it: every animation shares one duration and
+     differs only by delay, and equal durations stay in phase forever, so the
+     ring, the nodes and the log line can never drift apart no matter how long
+     the tab is left open.
+
+     A node lights when the arc reaches it and holds until its own cycle comes
+     round again, so the reset rolls through the three rather than clearing
+     them at once — the loop is never seen empty.
+
+     The cycle is four slots: one per stage, then a closing beat held while the
+     run sits complete. That is where 25% (one slot) and 75% (the arc closing
+     the circle) come from below; changing the stage count means changing both.
+     ======================================================================== */
+
+  .loop {
+    --cycle: 7.5s;
   }
 
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) .theme-icon-sun {
-      display: block;
-    }
+  .loop-spin {
+    display: inline-block;
+    animation: loop-spin var(--cycle) linear infinite;
+  }
 
-    :root:not([data-theme="light"]) .theme-icon-moon {
-      display: none;
+  @keyframes loop-spin {
+    to {
+      rotate: 1turn;
     }
   }
 
-  :root[data-theme="dark"] .theme-icon-sun {
+  .loop-dial {
+    position: relative;
+    width: 100%;
+    max-width: 19rem;
+    margin: 0 auto;
+  }
+
+  .loop-dial svg {
     display: block;
-  }
-
-  :root[data-theme="dark"] .theme-icon-moon {
-    display: none;
-  }
-
-  /* ==========================================================================
-   Hero frame
-   ========================================================================== */
-
-  .photo-frame {
-    width: 12.5rem;
-    aspect-ratio: 4 / 5;
+    width: 100%;
     height: auto;
-    border: 1px solid var(--surface-border);
-    border-radius: 1.5rem;
-    box-shadow: var(--shadow-card);
+    overflow: visible;
   }
 
-  @media (min-width: 768px) {
-    .photo-frame {
-      width: 15rem;
+  .loop-track-ring {
+    fill: none;
+    stroke: var(--line-2);
+    stroke-width: 1;
+  }
+
+  /* pathLength on the element normalises the circumference to 100, so the
+     dash values below are whole units rather than a computed 2πr. Rotated so
+     the arc starts at the twelve o'clock node instead of at three o'clock,
+     which is where SVG begins a circle. */
+  .loop-sweep {
+    fill: none;
+    stroke: var(--ok);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    transform: rotate(-90deg);
+    transform-box: view-box;
+    transform-origin: 50% 50%;
+    animation: loop-sweep var(--cycle) linear infinite;
+  }
+
+  @keyframes loop-sweep {
+    from {
+      stroke-dashoffset: 100;
+    }
+
+    75%,
+    to {
+      stroke-dashoffset: 0;
     }
   }
 
-  @media (min-width: 1024px) {
-    .photo-frame {
-      width: 17.5rem;
+  /* The dot rides the leading edge of the arc. It is drawn at twelve o'clock
+     and the group is spun, so its position is one rotation rather than two
+     animated coordinates. */
+  .loop-orbit {
+    fill: var(--accent);
+    transform-box: view-box;
+    transform-origin: 50% 50%;
+    animation: loop-orbit var(--cycle) linear infinite;
+  }
+
+  @keyframes loop-orbit {
+    from {
+      transform: rotate(0deg);
+    }
+
+    75%,
+    to {
+      transform: rotate(360deg);
     }
   }
 
-  /* ==========================================================================
-   Buttons and form fields
-   ========================================================================== */
+  .loop-node {
+    fill: var(--surface);
+    stroke: var(--line-2);
+    stroke-width: 1.5;
+    animation: loop-node var(--cycle) linear infinite;
+  }
 
-  .button-primary {
+  @keyframes loop-node {
+    from {
+      fill: var(--surface);
+      stroke: var(--line-2);
+    }
+
+    1%,
+    to {
+      fill: var(--ok);
+      stroke: var(--ok);
+    }
+  }
+
+  .loop-node-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-anchor: middle;
+    dominant-baseline: middle;
+    fill: var(--faint);
+    animation: loop-node-label var(--cycle) linear infinite;
+  }
+
+  @keyframes loop-node-label {
+    from {
+      fill: var(--faint);
+    }
+
+    1%,
+    to {
+      fill: var(--fg);
+    }
+  }
+
+  .loop-centre {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    font-family: var(--font-mono);
+    pointer-events: none;
+  }
+
+  /* Reads top to bottom as one sentence — "shipping for" over the figure —
+     rather than across the dial, which would want a line long enough to reach
+     the ring on both sides. */
+  .loop-centre-value {
+    font-size: 1.125rem;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    color: var(--fg);
+  }
+
+  .loop-centre-unit {
+    font-size: 0.5625rem;
+    font-weight: 400;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--faint);
+  }
+
+  .loop-log {
+    position: relative;
+    margin-top: 1.4rem;
+    /* Exactly one line, which every line is: the panel cannot change height as
+       the log advances, so the section below it cannot be nudged down the page
+       four times a cycle. */
+    min-height: 1.15rem;
+    /* A command is a fixed-width record and does not reflow, so on a narrow
+       screen it scrolls inside the panel rather than wrapping to four lines
+       and pushing the panel open. Absolutely positioned lines still extend
+       this box's scroll width, because it is their containing block. */
+    overflow-x: auto;
+  }
+
+  .loop-line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    white-space: nowrap;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    line-height: 1.6;
+    color: var(--muted);
+    opacity: 0;
+    animation: loop-line var(--cycle) linear infinite;
+  }
+
+  /* Held past its own slot so the next line has faded in before this one is
+     gone. Ending exactly on the slot boundary leaves a blank frame between
+     every pair, which reads as a dropped frame rather than as a dissolve. */
+  @keyframes loop-line {
+    from {
+      opacity: 0;
+      translate: 0 3px;
+    }
+
+    3% {
+      opacity: 1;
+      translate: 0 0;
+    }
+
+    24% {
+      opacity: 1;
+      translate: 0 0;
+    }
+
+    28%,
+    to {
+      opacity: 0;
+      translate: 0 0;
+    }
+  }
+
+  /* ========================================================================
+     Pipeline rail
+
+     The sections are stages of one run: a spine down the left gutter with a
+     node per stage. Nodes start pending, pulse while a stage is on screen and
+     settle to a green tick once it is behind you.
+     ======================================================================== */
+
+  .pipeline {
+    --gutter: 2.5rem;
+    --node: 1.5rem;
+    position: relative;
+    padding-left: var(--gutter);
+  }
+
+  @media (min-width: 640px) {
+    .pipeline {
+      --gutter: 3.25rem;
+      --node: 1.75rem;
+    }
+  }
+
+  /* The unrun track, faded at both ends so it reads as a length of pipe and
+     not a border on the column. */
+  .pipeline::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: calc(var(--node) / 2);
+    width: 1px;
+    background: linear-gradient(
+      to bottom,
+      transparent 0,
+      var(--line-2) 4rem,
+      var(--line-2) calc(100% - 6rem),
+      transparent 100%
+    );
+  }
+
+  /* What has run so far, drawn over the track. Height is written by the
+     scroll handler. */
+  .rail-fill {
+    position: absolute;
+    top: 0;
+    left: calc(var(--node) / 2);
+    width: 1px;
+    height: var(--run, 0%);
+    opacity: 0.8;
+    background: linear-gradient(
+      to bottom,
+      transparent 0,
+      var(--ok) 4rem,
+      var(--ok) 100%
+    );
+  }
+
+  /* Opaque, so it masks the spine running behind it. */
+  .node {
+    position: absolute;
+    top: 0.15rem;
+    left: calc(var(--gutter) * -1);
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 0.6rem 1.35rem;
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: #fff;
-    background-image: linear-gradient(
-      120deg,
-      var(--accent-3),
-      var(--accent) 55%,
-      var(--accent-2)
-    );
+    width: var(--node);
+    height: var(--node);
+    font-family: var(--font-mono);
+    font-size: 0.5625rem;
+    font-weight: 600;
+    color: var(--faint);
+    background: var(--bg);
+    border: 1px solid var(--line-2);
     border-radius: 9999px;
-    box-shadow: var(--shadow-card);
     transition:
-      transform 0.25s ease,
-      box-shadow 0.25s ease,
-      filter 0.25s ease;
+      color 0.3s ease,
+      border-color 0.3s ease;
   }
 
-  .button-primary:hover {
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-card-hover);
-    filter: saturate(115%);
+  /* The tap off the spine into the heading. */
+  .node::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 100%;
+    width: calc(var(--gutter) - var(--node));
+    height: 1px;
+    background: var(--line-2);
   }
 
-  .button-ghost {
+  [data-state="running"] .node {
+    color: var(--accent);
+    border-color: var(--accent);
+    animation: node-pulse 1.8s ease-out infinite;
+  }
+
+  [data-state="passed"] .node {
+    color: var(--ok);
+    border-color: color-mix(in srgb, var(--ok) 65%, transparent);
+  }
+
+  @keyframes node-pulse {
+    from {
+      box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 45%, transparent);
+    }
+
+    to {
+      box-shadow: 0 0 0 0.55rem transparent;
+    }
+  }
+
+  /* The number and the tick both ship; only one shows. */
+  .node-tick {
+    display: none;
+  }
+
+  [data-state="passed"] .node-tick {
+    display: block;
+  }
+
+  [data-state="passed"] .node-num {
+    display: none;
+  }
+
+  .stage-status {
     display: inline-flex;
     align-items: center;
-    padding: 0.5rem 1.05rem;
-    font-size: 0.8125rem;
-    font-weight: 500;
-    color: var(--muted);
-    background: var(--surface);
-    border: 1px solid var(--surface-border);
-    border-radius: 9999px;
-    transition:
-      color 0.25s ease,
-      background-color 0.25s ease,
-      border-color 0.25s ease;
+    gap: 0.4rem;
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--faint);
   }
 
-  .button-ghost:hover {
-    color: var(--foreground);
-    background: var(--surface-strong);
-    border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  /* All three status words ship and the stage's own data-state picks one, so
+     a stage changing state costs a CSS match rather than a React render. */
+  .stage-word {
+    display: none;
+  }
+
+  [data-state="pending"] .stage-word-pending,
+  [data-state="running"] .stage-word-running,
+  [data-state="passed"] .stage-word-passed {
+    display: inline;
+  }
+
+  [data-state="running"] .stage-status {
+    color: var(--accent);
+  }
+
+  [data-state="passed"] .stage-status {
+    color: var(--ok);
+  }
+
+  /* ========================================================================
+     Status indicators
+     ======================================================================== */
+
+  .live-dot {
+    position: relative;
+    display: inline-block;
+    width: 0.4rem;
+    height: 0.4rem;
+    background: var(--ok);
+    border-radius: 9999px;
+  }
+
+  /* The ring that travels outward, the way a live indicator breathes. */
+  .live-dot::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--ok);
+    border-radius: inherit;
+    animation: ping 2.4s ease-out infinite;
+  }
+
+  @keyframes ping {
+    from {
+      opacity: 0.65;
+      transform: scale(1);
+    }
+
+    to {
+      opacity: 0;
+      transform: scale(3.4);
+    }
+  }
+
+  /* ========================================================================
+     Build badges
+
+     Two-part shields, as across the top of a repository README: a dark key
+     and a coloured value sharing one border, with no seam between them.
+     ======================================================================== */
+
+  .shield {
+    display: inline-flex;
+    align-items: stretch;
+    overflow: hidden;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    line-height: 1.05rem;
+    border: 1px solid var(--line);
+    border-radius: var(--r-chip);
+  }
+
+  .shield-k {
+    padding: 0.28rem 0.5rem;
+    color: var(--muted);
+    background: color-mix(in srgb, var(--fg) 6%, transparent);
+  }
+
+  .shield-v {
+    padding: 0.28rem 0.5rem;
+    font-weight: 500;
+    color: var(--accent-ink);
+    background: var(--accent);
+  }
+
+  /* ========================================================================
+     Metric tiles
+     ======================================================================== */
+
+  /* Tracks come from how many tiles there are rather than from a fixed four,
+     so adding or dropping one closes the row up instead of leaving a hole
+     where it used to be. auto-fit collapses the tracks nothing lands in. */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+    gap: 0.625rem;
+  }
+
+  .stat {
+    padding: 0.9rem 0.85rem 0.95rem;
+    background: color-mix(in srgb, var(--surface) 70%, transparent);
+    border: 1px solid var(--line);
+    border-radius: var(--r-panel);
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease;
+  }
+
+  .stat:hover {
+    background: var(--raise);
+    border-color: var(--line-2);
+  }
+
+  @media (min-width: 640px) {
+    .stat {
+      padding: 1.1rem 1.1rem 1.15rem;
+    }
+  }
+
+  .stat-value {
+    font-family: var(--font-mono);
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    color: var(--fg);
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (min-width: 640px) {
+    .stat-value {
+      font-size: 1.875rem;
+    }
+  }
+
+  /* A short amber tick under the number, so the four tiles read as gauges
+     rather than as four paragraphs. */
+  .stat-value::after {
+    content: "";
+    display: block;
+    width: 1.75rem;
+    height: 2px;
+    margin-top: 0.55rem;
+    background: var(--accent);
+  }
+
+  /* ========================================================================
+     Stack
+
+     Four panels, one per part of the estate, and inside each a flat run of
+     names in one treatment. There is deliberately no prominence tier: dimming
+     two thirds of your own inventory reads as a list of the entries you are
+     apologising for, and the reader takes the hint. Every cell is the same
+     width and the same weight, so the section reads as a manifest of a
+     working account rather than a self-assessment.
+     ======================================================================== */
+
+  /* Sized so the longest name in the content file still clears the cell's own
+     padding at the narrowest column this ever resolves to. */
+  .skill-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
+    gap: 0.4rem;
+  }
+
+  .skill {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    gap: 0.55rem;
+    padding: 0.42rem 0.65rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--fg);
+    background: color-mix(in srgb, var(--accent) 7%, transparent);
+    border-left: 2px solid var(--accent);
+    border-radius: 0 var(--r-chip) var(--r-chip) 0;
+    transition:
+      background-color 0.18s ease,
+      padding-left 0.18s ease;
+  }
+
+  .skill:hover {
+    padding-left: 0.85rem;
+    background: color-mix(in srgb, var(--accent) 14%, transparent);
+  }
+
+  /* The masthead shortlist: same marker and rule as the inventory below, so
+     the two read as one system, but a step up in size and tint because this is
+     the row that gets scanned first. flex: none so a long name wraps to the
+     next line rather than being squeezed by its neighbours. */
+  .skill-lead {
+    flex: none;
+    padding: 0.52rem 0.8rem;
+    font-size: 0.875rem;
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+    border-left-width: 3px;
+  }
+
+  .skill-lead:hover {
+    padding-left: 0.95rem;
+    background: color-mix(in srgb, var(--accent) 18%, transparent);
+  }
+
+  /* The filled square that opens each entry, so the row is legible as a marked
+     item without relying on the tint alone. */
+  .skill::before {
+    content: "";
+    flex: none;
+    width: 0.3rem;
+    height: 0.3rem;
+    background: var(--accent);
+    border-radius: 1px;
+  }
+
+  /* ========================================================================
+     Diff lines
+
+     Achievements read as additions in a changelog rather than as prose
+     bullets, because that is what they are.
+     ======================================================================== */
+
+  .diff {
+    display: grid;
+    grid-template-columns: 1.1rem minmax(0, 1fr);
+    gap: 0.35rem;
+    padding: 0.4rem 0.6rem 0.4rem 0.35rem;
+    border-left: 2px solid transparent;
+    border-radius: 0 var(--r-chip) var(--r-chip) 0;
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease;
+  }
+
+  .diff:hover {
+    background: color-mix(in srgb, var(--ok) 7%, transparent);
+    border-left-color: color-mix(in srgb, var(--ok) 60%, transparent);
+  }
+
+  .diff-mark {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    line-height: 1.6;
+    color: var(--ok);
+    user-select: none;
+  }
+
+  /* ========================================================================
+     Manifest
+
+     The positioning statement, restated as the resource it describes.
+     ======================================================================== */
+
+  .yaml {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    line-height: 1.85;
+    color: var(--muted);
+    overflow-x: auto;
+  }
+
+  @media (min-width: 640px) {
+    .yaml {
+      font-size: 0.8125rem;
+    }
+  }
+
+  .yaml-k {
+    color: var(--info);
+  }
+
+  .yaml-s {
+    color: var(--fg);
+  }
+
+  .yaml-n {
+    color: var(--accent);
+  }
+
+  .yaml-c {
+    color: var(--faint);
+  }
+
+  /* ========================================================================
+     Tags, buttons, fields
+     ======================================================================== */
+
+  .chip {
+    display: inline-block;
+    padding: 0.2rem 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    line-height: 1.1rem;
+    color: var(--muted);
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: var(--r-chip);
+    transition:
+      color 0.18s ease,
+      border-color 0.18s ease;
+  }
+
+  .chip:hover {
+    color: var(--fg);
+    border-color: var(--line-2);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.05rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    border-radius: var(--r-chip);
+    transition:
+      color 0.18s ease,
+      background-color 0.18s ease,
+      border-color 0.18s ease,
+      filter 0.18s ease;
+  }
+
+  .btn-primary {
+    color: var(--accent-ink);
+    background: var(--accent);
+    border: 1px solid var(--accent);
+  }
+
+  .btn-primary:hover {
+    filter: brightness(1.09);
+  }
+
+  .btn-ghost {
+    color: var(--muted);
+    background: transparent;
+    border: 1px solid var(--line);
+  }
+
+  .btn-ghost:hover {
+    color: var(--fg);
+    background: var(--raise);
+    border-color: var(--line-2);
+  }
+
+  /* Slides in on hover rather than sitting there greyed out. */
+  .btn-arrow {
+    color: var(--accent);
+    opacity: 0;
+    translate: -2px 0;
+    transition:
+      opacity 0.18s ease,
+      translate 0.18s ease;
+  }
+
+  .btn:hover .btn-arrow,
+  .btn:focus-visible .btn-arrow {
+    opacity: 1;
+    translate: 0 0;
   }
 
   .field-group {
     display: flex;
     flex-direction: column;
-    gap: 0.45rem;
+    gap: 0.4rem;
   }
 
   .field-group > label {
-    font-size: 0.75rem;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
     font-weight: 500;
-    letter-spacing: 0.03em;
-    color: var(--muted);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--faint);
   }
 
   .field {
     width: 100%;
-    padding: 0.6rem 0.85rem;
-    font: inherit;
-    font-size: 0.875rem;
-    color: var(--foreground);
-    background: var(--surface-strong);
-    border: 1px solid var(--rule);
-    border-radius: 0.75rem;
+    padding: 0.6rem 0.7rem;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    color: var(--fg);
+    background: color-mix(in srgb, var(--bg) 60%, transparent);
+    border: 1px solid var(--line);
+    border-radius: var(--r-chip);
     transition:
-      border-color 0.25s ease,
-      box-shadow 0.25s ease;
+      border-color 0.18s ease,
+      box-shadow 0.18s ease;
   }
 
   .field::placeholder {
-    color: color-mix(in srgb, var(--muted) 65%, transparent);
+    color: var(--faint);
   }
 
   /* Replaces the global focus ring rather than adding a second one. */
   .field:focus-visible {
     outline: none;
     border-color: var(--accent);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
+    box-shadow: 0 0 0 1px var(--accent);
   }
 
-  .pill {
-    display: inline-block;
-    padding: 0.3rem 0.7rem;
-    font-size: 0.78rem;
-    line-height: 1.1rem;
-    color: var(--muted);
-    background: var(--surface);
-    border: 1px solid var(--rule);
-    border-radius: 9999px;
-    transition:
-      color 0.25s ease,
-      border-color 0.25s ease;
-  }
+  /* ========================================================================
+     Command palette
+     ======================================================================== */
 
-  .pill:hover {
-    color: var(--foreground);
-    border-color: var(--accent);
-  }
-
-  /* Weight 3 in the content file. */
-  .pill-core {
-    font-weight: 500;
-    color: var(--accent);
-    background: color-mix(in srgb, var(--accent) 11%, var(--surface));
-    border-color: color-mix(in srgb, var(--accent) 40%, transparent);
-  }
-
-  .pill-core:hover {
-    color: var(--accent);
-    background: color-mix(in srgb, var(--accent) 18%, var(--surface));
-  }
-
-  /* ==========================================================================
-   Cursor glow
-
-   Painted only once .has-cursor-glow is on the root.
-   ========================================================================== */
-
-  .cursor-glow {
+  .cmdk-scrim {
     position: fixed;
     inset: 0;
-    z-index: -1;
-    display: none;
-    pointer-events: none;
-    background: radial-gradient(
-      420px circle at var(--cursor-x, 50%) var(--cursor-y, 50%),
-      color-mix(in srgb, var(--accent) 13%, transparent),
-      transparent 68%
-    );
+    z-index: 60;
+    background: color-mix(in srgb, var(--bg) 72%, transparent);
+    backdrop-filter: blur(4px);
+    animation: fade-in 0.14s ease-out;
   }
 
-  .has-cursor-glow .cursor-glow {
-    display: block;
-  }
-
-  /* ==========================================================================
-   Spotlight cards and link buttons
-   ========================================================================== */
-
-  .spotlight {
-    position: relative;
+  .cmdk-panel {
+    position: fixed;
+    top: 12vh;
+    left: 50%;
+    z-index: 61;
+    translate: -50% 0;
+    width: min(34rem, calc(100vw - 2rem));
     overflow: hidden;
-  }
-
-  .spotlight::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    border-radius: inherit;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
-    background: radial-gradient(
-      260px circle at var(--spot-x, 50%) var(--spot-y, 50%),
-      color-mix(in srgb, var(--accent) 28%, transparent),
-      transparent 72%
-    );
-  }
-
-  .spotlight:hover::before {
-    opacity: 1;
-  }
-
-  /* Gradient over the whole card, masked down to the 1px ring: paint the
-     padding-box and border-box, then subtract one from the other. */
-  .spotlight::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    padding: 1px;
-    border-radius: inherit;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
-    background: radial-gradient(
-      320px circle at var(--spot-x, 50%) var(--spot-y, 50%),
-      var(--accent),
-      transparent 62%
-    );
-    -webkit-mask:
-      linear-gradient(#000 0 0) content-box,
-      linear-gradient(#000 0 0);
-    mask:
-      linear-gradient(#000 0 0) content-box,
-      linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-  }
-
-  .spotlight:hover::after {
-    opacity: 1;
-  }
-
-  /* Keeps card content above the highlight rather than beneath it. */
-  .spotlight > * {
-    position: relative;
-    z-index: 1;
-  }
-
-  /* Dashed and dimmed so it does not read as clickable. It is a span, so
-     there is nothing to click or tab to. */
-  .link-pending {
-    color: var(--muted);
     background: var(--surface);
-    border: 1px dashed var(--rule);
-    opacity: 0.72;
-    cursor: default;
+    border: 1px solid var(--line-2);
+    border-radius: var(--r-panel);
+    box-shadow: 0 24px 60px -20px rgb(0 0 0 / 45%);
+    animation: pop-in 0.16s ease-out;
   }
 
-  .link-soon {
-    font-family: var(--font-mono), ui-monospace, monospace;
-    font-size: 0.6rem;
-    letter-spacing: 0.14em;
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes pop-in {
+    from {
+      opacity: 0;
+      translate: -50% 8px;
+    }
+  }
+
+  .cmdk-input {
+    width: 100%;
+    padding: 0.9rem 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: var(--fg);
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .cmdk-input::placeholder {
+    color: var(--faint);
+  }
+
+  .cmdk-input:focus {
+    outline: none;
+  }
+
+  .cmdk-item {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    width: 100%;
+    padding: 0.55rem 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    text-align: left;
+    color: var(--muted);
+  }
+
+  .cmdk-item[data-active="true"] {
+    color: var(--fg);
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+    box-shadow: inset 2px 0 0 var(--accent);
+  }
+
+  .cmdk-hint {
+    margin-left: auto;
+    font-size: 0.625rem;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    opacity: 0.8;
-  }
-
-  .link-button-arrow {
-    opacity: 0.35;
-    transition:
-      opacity 0.25s ease,
-      transform 0.25s ease;
-  }
-
-  .link-button:hover .link-button-arrow,
-  .link-button:focus-visible .link-button-arrow {
-    opacity: 1;
-    transform: translateX(2px);
+    color: var(--faint);
   }
 }
 
 /* ==========================================================================
    Scroll reveal
 
-   Scoped to .js, so without JavaScript every section renders visible.
+   Scoped to .js, so with scripting off every section renders visible.
    ========================================================================== */
 
 .js [data-reveal] {
   opacity: 0;
-  transform: translateY(18px);
+  translate: 0 12px;
 }
 
 .js [data-reveal][data-visible="true"] {
   opacity: 1;
-  transform: none;
+  translate: 0 0;
   transition:
-    opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
-    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    translate 0.55s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -681,6 +1403,10 @@ body {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    /* A staggered delay would leave the terminal transcript blank for a
+       second or so; started in the past, every line is already at its end
+       state on the first frame. */
+    animation-delay: -1ms !important;
   }
 
   /* A nav jump lands instantly instead of sliding the whole page past. */
@@ -690,6 +1416,49 @@ body {
 
   .js [data-reveal] {
     opacity: 1;
-    transform: none;
+    translate: none;
+  }
+
+  /* A breathing ring is exactly the kind of motion this setting turns off. */
+  .live-dot::after,
+  .loop-spin,
+  [data-state="running"] .node {
+    animation: none;
+  }
+
+  /* The build loop is the one thing on the page that says nothing at all when
+     its animation is cancelled: the ring would sit undrawn, every node would
+     sit pending and every stacked log line would sit at opacity zero. So it is
+     shown settled instead — the run complete, and only its closing line kept.
+     The orbiting dot has no settled position, so it goes. */
+  .loop-sweep {
+    stroke-dashoffset: 0;
+  }
+
+  .loop-orbit {
+    display: none;
+  }
+
+  .loop-node {
+    fill: var(--ok);
+    stroke: var(--ok);
+  }
+
+  .loop-node-label {
+    fill: var(--fg);
+  }
+
+  .loop-line {
+    display: none;
+  }
+
+  .loop-line:last-child {
+    display: flex;
+    position: static;
+    opacity: 1;
+  }
+
+  .loop-log {
+    min-height: 0;
   }
 }

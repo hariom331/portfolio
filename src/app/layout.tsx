@@ -1,21 +1,25 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import type { ReactNode } from "react";
 
+import { Backdrop } from "@/components/Backdrop";
+import { CommandPalette } from "@/components/CommandPalette";
 import { CursorGlow } from "@/components/CursorGlow";
-import { GradientBackdrop } from "@/components/GradientBackdrop";
-import { Navbar } from "@/components/Navbar";
+import { ScrollProgress } from "@/components/ScrollProgress";
+import { TopBar } from "@/components/TopBar";
 import { site } from "@/content/site";
 
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+// Both faces are variable, so every weight in the design comes out of one file
+// each and no weight list is needed.
+const display = Space_Grotesk({
+  variable: "--font-display",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const terminal = JetBrains_Mono({
+  variable: "--font-terminal",
   subsets: ["latin"],
 });
 
@@ -51,21 +55,16 @@ const personJsonLd = {
     "@type": "PostalAddress",
     addressLocality: site.location,
   },
+  knowsAbout: site.stack.flatMap((group) => group.items),
   sameAs: site.links
     .map((link) => link.href)
     .filter((href) => href.startsWith("https://")),
 };
 
-// Adds the js class that gates scroll-reveal, and applies the stored theme
-// before paint so the page does not flash the wrong one.
-const bootScript = `(function(){
-  var r = document.documentElement;
-  r.classList.add("js");
-  try {
-    var t = localStorage.getItem("theme");
-    if (t === "light" || t === "dark") r.setAttribute("data-theme", t);
-  } catch (e) {}
-})()`;
+// Marks the document as scripted, which is what gates the scroll reveal: with
+// no JavaScript the sections never get their observer, so they must not start
+// hidden.
+const bootScript = `document.documentElement.classList.add("js")`;
 
 interface RootLayoutProps {
   readonly children: ReactNode;
@@ -75,7 +74,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${display.variable} ${terminal.variable} h-full antialiased`}
       // The boot script edits this element's class list before hydration.
       suppressHydrationWarning
     >
@@ -83,16 +82,21 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <script dangerouslySetInnerHTML={{ __html: bootScript }} />
       </head>
       <body className="flex min-h-full flex-col">
-        <GradientBackdrop />
+        <Backdrop />
         <CursorGlow />
+        <ScrollProgress />
+
         <a
           href="#main"
-          className="glass sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2"
+          className="panel sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2"
         >
           Skip to content
         </a>
-        <Navbar />
+
+        <TopBar />
         {children}
+        <CommandPalette />
+
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}

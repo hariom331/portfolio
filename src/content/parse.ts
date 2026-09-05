@@ -1,15 +1,18 @@
-// A JSON module's inferred type is too wide to satisfy SiteContent (weight
-// widens to number, kind to string), so the shape is checked here instead.
-// Failures name the bad path and throw at build time.
+// A JSON module's inferred type is too wide to satisfy SiteContent (kind
+// widens to string), so the shape is checked here instead. Failures name the
+// bad path and throw at build time.
 
 import type {
+  Credential,
   ExternalLink,
   LinkKind,
+  Metric,
   Photo,
+  Pipeline,
+  PipelineStage,
   Project,
   Role,
   SiteContent,
-  Skill,
   StackGroup,
 } from "./types";
 
@@ -84,20 +87,15 @@ function linkKind(value: unknown, path: string): LinkKind {
   return fail(path, `one of ${LINK_KINDS.join(", ")}`, value);
 }
 
-function weight(value: unknown, path: string): 1 | 2 | 3 {
-  if (value === 1 || value === 2 || value === 3) return value;
-  return fail(path, "1, 2 or 3", value);
-}
-
 function link(value: unknown, path: string): ExternalLink {
   const f = fields(value, path);
-  const pending = optional(f.pending, `${path}.pending`, bool);
   const href = str(f.href, `${path}.href`);
 
-  // Blank href is only valid on a pending link.
-  if (href === "" && pending !== true) {
+  // Every link on the page is followed, so one with nowhere to go is a
+  // mistake rather than a placeholder: leave it out of the file entirely.
+  if (href === "") {
     throw new Error(
-      `content.json: ${path}.href is empty: give it a URL, or mark the link "pending": true`,
+      `content.json: ${path}.href is empty: give it a URL, or remove the link`,
     );
   }
 
@@ -106,15 +104,6 @@ function link(value: unknown, path: string): ExternalLink {
     href,
     kind: optional(f.kind, `${path}.kind`, linkKind),
     srLabel: optional(f.srLabel, `${path}.srLabel`, str),
-    pending,
-  };
-}
-
-function skill(value: unknown, path: string): Skill {
-  const f = fields(value, path);
-  return {
-    name: str(f.name, `${path}.name`),
-    weight: weight(f.weight, `${path}.weight`),
   };
 }
 
@@ -122,7 +111,41 @@ function stackGroup(value: unknown, path: string): StackGroup {
   const f = fields(value, path);
   return {
     label: str(f.label, `${path}.label`),
-    items: list(f.items, `${path}.items`, skill),
+    items: list(f.items, `${path}.items`, str),
+  };
+}
+
+function metric(value: unknown, path: string): Metric {
+  const f = fields(value, path);
+  return {
+    value: str(f.value, `${path}.value`),
+    label: str(f.label, `${path}.label`),
+    note: str(f.note, `${path}.note`),
+  };
+}
+
+function credential(value: unknown, path: string): Credential {
+  const f = fields(value, path);
+  return {
+    label: str(f.label, `${path}.label`),
+    value: str(f.value, `${path}.value`),
+  };
+}
+
+function pipelineStage(value: unknown, path: string): PipelineStage {
+  const f = fields(value, path);
+  return {
+    name: str(f.name, `${path}.name`),
+    command: str(f.command, `${path}.command`),
+    result: str(f.result, `${path}.result`),
+  };
+}
+
+function pipeline(value: unknown, path: string): Pipeline {
+  const f = fields(value, path);
+  return {
+    stages: list(f.stages, `${path}.stages`, pipelineStage),
+    result: str(f.result, `${path}.result`),
   };
 }
 
@@ -142,8 +165,10 @@ function role(value: unknown, path: string): Role {
     company: str(f.company, `${path}.company`),
     title: str(f.title, `${path}.title`),
     period: str(f.period, `${path}.period`),
+    current: optional(f.current, `${path}.current`, bool),
     location: str(f.location, `${path}.location`),
     context: str(f.context, `${path}.context`),
+    metrics: list(f.metrics, `${path}.metrics`, metric),
     bullets: list(f.bullets, `${path}.bullets`, str),
     tech: list(f.tech, `${path}.tech`, str),
   };
@@ -167,13 +192,19 @@ export function parseSiteContent(value: unknown): SiteContent {
     name: str(f.name, "name"),
     role: str(f.role, "role"),
     tagline: str(f.tagline, "tagline"),
+    focus: list(f.focus, "focus", str),
     location: str(f.location, "location"),
+    region: str(f.region, "region"),
     url: str(f.url, "url"),
     email: str(f.email, "email"),
+    careerSince: str(f.careerSince, "careerSince"),
+    experienceYears: str(f.experienceYears, "experienceYears"),
     photo: photo(f.photo, "photo"),
     links: list(f.links, "links", link),
     positioning: str(f.positioning, "positioning"),
-    credentials: str(f.credentials, "credentials"),
+    philosophy: str(f.philosophy, "philosophy"),
+    pipeline: pipeline(f.pipeline, "pipeline"),
+    credentials: list(f.credentials, "credentials", credential),
     stack: list(f.stack, "stack", stackGroup),
     projects: list(f.projects, "projects", project),
     experience: list(f.experience, "experience", role),

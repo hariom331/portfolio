@@ -1,58 +1,90 @@
-import { Reveal } from "@/components/Reveal";
+import { Lit } from "@/components/Lit";
 import { Section } from "@/components/Section";
-import { SpotlightCard } from "@/components/SpotlightCard";
 import { site } from "@/content/site";
 
 export function Experience() {
   return (
-    <Section id="experience" title="Work experience">
-      <div className="space-y-4">
-        {site.experience.map((role, index) => (
-          <Reveal key={`${role.company}-${role.period}`} delay={index * 80}>
-            <SpotlightCard className="p-6 sm:p-7">
-              <div className="sm:grid sm:grid-cols-[10rem_minmax(0,1fr)] sm:gap-8">
-                <p className="text-muted font-mono text-xs leading-relaxed sm:pt-1">
-                  {role.period}
-                  <span className="block">{role.location}</span>
-                </p>
+    <Section
+      id="experience"
+      title="Experience"
+      lead="Where I have shipped, most recent first. The numbers lead, because they are what changed by my being there; the detail underneath is what backs them up."
+    >
+      <div className="space-y-5">
+        {site.experience.map((role) => (
+          <Lit key={`${role.company}-${role.period}`}>
+            <div className="panel-head">
+              {role.current ? (
+                <span aria-hidden="true" className="live-dot" />
+              ) : null}
+              <span className="text-fg">{role.company}</span>
+              <span aria-hidden="true">/</span>
+              <span>{role.title}</span>
+              <span className="panel-head-end tnum hidden sm:inline">
+                {role.period}
+              </span>
+            </div>
 
-                <div className="mt-3 sm:mt-0">
-                  <h3 className="text-lg font-semibold tracking-tight">
-                    {role.title}, {role.company}
-                  </h3>
+            <div className="panel-body">
+              <p className="text-faint mb-4 font-mono text-[0.6875rem] tracking-wider uppercase sm:hidden">
+                {role.period} · {role.location}
+              </p>
 
-                  <p className="text-muted mt-2 max-w-[80ch] text-sm leading-relaxed">
-                    {role.context}
-                  </p>
+              <p className="text-muted max-w-3xl text-sm leading-relaxed">
+                {role.context}
+              </p>
 
-                  <ul className="mt-5 space-y-3">
-                    {role.bullets.map((bullet) => (
-                      <li
-                        key={bullet}
-                        className="flex max-w-[86ch] gap-3 text-sm leading-relaxed"
-                      >
-                        <span
-                          aria-hidden="true"
-                          className="bg-accent mt-2 h-1.5 w-1.5 shrink-0 rounded-full"
-                        />
-                        <span>{bullet}</span>
-                      </li>
-                    ))}
-                  </ul>
+              {/* The numbers a recruiter is scanning for, on the role that
+                  earned them. */}
+              {role.metrics.length > 0 ? (
+                <dl className="stat-grid mt-6">
+                  {role.metrics.map((metric) => (
+                    // The number leads visually, but the label is still the
+                    // term the value describes, so the order is swapped in CSS
+                    // rather than in the markup.
+                    <div key={metric.label} className="stat flex flex-col">
+                      <dt className="order-2 mt-3">
+                        <span className="text-fg block text-[0.8125rem] leading-snug font-medium">
+                          {metric.label}
+                        </span>
+                        <span className="text-faint mt-1 block font-mono text-[0.6875rem]">
+                          {metric.note}
+                        </span>
+                      </dt>
+                      <dd className="stat-value order-1">{metric.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              ) : null}
 
-                  {role.tech.length > 0 ? (
-                    <ul className="mt-6 flex flex-wrap gap-1.5">
-                      {role.tech.map((tech) => (
-                        <li key={tech} className="pill">
-                          {tech}
-                        </li>
-                      ))}
-                    </ul>
-                  ) : null}
-                </div>
-              </div>
-            </SpotlightCard>
-          </Reveal>
+              <ul className="mt-7 -ml-1 space-y-0.5">
+                {role.bullets.map((bullet) => (
+                  <li key={bullet} className="diff">
+                    <span aria-hidden="true" className="diff-mark">
+                      +
+                    </span>
+                    <span className="text-fg text-[0.875rem] leading-relaxed">
+                      {bullet}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+
+              <ul
+                aria-label={`Technologies used at ${role.company}`}
+                className="mt-6 flex flex-wrap gap-1.5"
+              >
+                {role.tech.map((item) => (
+                  <li key={item} className="chip">
+                    {item}
+                  </li>
+                ))}
+              </ul>
+
+              <p className="text-faint mt-5 hidden font-mono text-[0.6875rem] sm:block">
+                {role.location}
+              </p>
+            </div>
+          </Lit>
         ))}
       </div>
     </Section>

@@ -5,43 +5,32 @@ import type { ExternalLink } from "@/content/types";
 interface LinkListProps {
   readonly links: readonly ExternalLink[];
   readonly label: string;
-  readonly compact?: boolean;
 }
 
-// A list rather than a nav landmark: pending entries are not links, and the
-// top bar is the real navigation.
-export function LinkList({ links, label, compact = false }: LinkListProps) {
+// A list rather than a nav landmark: the console bar is the real navigation.
+// Every entry here goes somewhere — a link with nothing behind it is left out
+// of the content file rather than shown as a promise.
+export function LinkList({ links, label }: LinkListProps) {
   if (links.length === 0) return null;
 
-  const size = compact ? "px-3 py-1.5 text-xs" : "px-4 py-2 text-sm";
-  const shared = `inline-flex items-center gap-2 rounded-full font-medium ${size}`;
-
   return (
-    <ul aria-label={label} className="flex flex-wrap gap-2.5">
+    <ul aria-label={label} className="flex flex-wrap gap-2">
       {links.map((link) => (
         <li key={`${link.kind ?? "link"}-${link.label}`}>
-          {link.pending ? (
-            <span className={`link-pending ${shared}`}>
-              {link.kind ? <LinkIcon kind={link.kind} /> : null}
-              <span>{link.label}</span>
-              <span className="link-soon">soon</span>
+          <a
+            href={link.href}
+            {...anchorProps(link.href)}
+            className="btn btn-ghost !px-2.5 !py-1.5"
+          >
+            {link.kind ? <LinkIcon kind={link.kind} /> : null}
+            <span>{link.label.toLowerCase()}</span>
+            {link.srLabel ? (
+              <span className="sr-only"> {link.srLabel}</span>
+            ) : null}
+            <span aria-hidden="true" className="btn-arrow">
+              →
             </span>
-          ) : (
-            <a
-              href={link.href}
-              {...anchorProps(link.href)}
-              className={`glass glass-hover link-button ${shared}`}
-            >
-              {link.kind ? <LinkIcon kind={link.kind} /> : null}
-              <span>{link.label}</span>
-              {link.srLabel ? (
-                <span className="sr-only"> {link.srLabel}</span>
-              ) : null}
-              <span aria-hidden="true" className="link-button-arrow">
-                →
-              </span>
-            </a>
-          )}
+          </a>
         </li>
       ))}
     </ul>

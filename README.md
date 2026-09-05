@@ -45,40 +45,128 @@ redeploy.
 
 ### Fields
 
-| Field         | Holds                                                          |
-| ------------- | -------------------------------------------------------------- |
-| `name`        | Full name. Also generates the navbar monogram.                 |
-| `role`        | Job title                                                      |
-| `tagline`     | One-line stack summary under the name                          |
-| `location`    | City, country                                                  |
-| `url`         | Absolute origin, for canonical and OG tags                     |
-| `email`       | Contact address                                                |
-| `photo`       | `{ src, alt, width, height }` or `null`                        |
-| `links`       | Header links: `{ label, href, kind }`                          |
-| `positioning` | The summary paragraph                                          |
-| `credentials` | One line of certifications and results                         |
-| `stack`       | `{ label, items: [{ name, weight }] }`                         |
-| `projects`    | `{ name, stack, description, links }`                          |
-| `experience`  | `{ company, title, period, location, context, bullets, tech }` |
+| Field         | Holds                                                              |
+| ------------- | ------------------------------------------------------------------ |
+| `name`        | Full name. Also generates the monogram and the `user@prod` prompt. |
+| `role`        | Job title                                                          |
+| `tagline`     | One-line stack summary under the name                              |
+| `location`    | City, country                                                      |
+| `region`      | Home AWS region, used as the locality label in the console chrome  |
+| `url`         | Absolute origin, for canonical and OG tags                         |
+| `email`       | Contact address                                                    |
+| `photo`       | `{ src, alt, width, height }` or `null`                            |
+| `links`       | Header links: `{ label, href, kind }`                              |
+| `positioning` | The summary paragraph                                              |
+| `philosophy`  | The "How I work" paragraph under it                                |
+| `deploy`      | The hero terminal transcript: `{ command, steps, result }`         |
+| `credentials` | The build badges: `{ label, value }`                               |
+| `stack`       | `{ label, items: [{ name, weight }] }`                             |
+| `projects`    | `{ name, stack, description, links }`                              |
+| `experience`  | A role — see below                                                 |
+
+A role is
+`{ company, title, period, since?, location, context, metrics, bullets, tech }`.
+
+`metrics` is the row of numbers the card leads with, each
+`{ value, label, note }`. They belong to the role rather than to the page: they
+are what changed on that engagement, so they are quoted where the engagement
+is, not in the masthead.
+
+`since` is an ISO date and drives the live uptime readout in the hero terminal.
+Leave it off a role that has ended and nothing counts up.
 
 A skill's `weight` runs 1 to 3 and sets prominence, not proficiency. Weight 3
-renders highlighted.
+is the tier the Stack panels highlight and the only one the manifest lists;
+weight 1 sits back a step from weight 2 in the supporting run.
 
 A link's `kind` picks its icon and must be one of `github`, `demo`, `docs`,
 `video`, `writeup`, `resume`, `linkedin` or `email`. Setting `"pending": true`
 renders an inert "soon" chip instead of a link, and ignores `href`.
 
+Every line of the hero terminal restates a claim the rest of the page backs up.
+Keep it that way — it is the first thing read and the easiest thing to make
+untrue.
+
 ## Using it for someone else
 
 Replace `content.json`, swap `public/resume.pdf`, and update the favicon at
-`src/app/favicon.ico`. Nothing in `src/components/` needs to change.
+`src/app/favicon.ico`.
 
-Four strings are still hard-coded and describe the current owner:
+Four things are still written into components and describe the current owner:
 
-- `Contact.tsx:54` invites recruiters hiring for cloud or backend roles
-- `Contact.tsx:70` claims availability for remote and hybrid roles
-- `Skills.tsx:13` refers to the tools the owner works in daily
-- `layout.tsx:34` sets the OpenGraph locale to `en_IN`
+- `Stack.tsx` — the section's lead paragraph
+- `Contact.tsx` — the lead paragraph, and the "Open to remote and hybrid" row
+- `Manifest.tsx` — the `apiVersion` and `kind` of the rendered resource
+- `layout.tsx` — the OpenGraph locale, `en_IN`
+
+## Theme
+
+One theme, dark. The page is a console and a console is dark, so there is no
+light mapping to keep in step and no toggle to ship.
+
+The metaphor is load-bearing rather than decorative:
+
+- The five sections are **stages of one run**, strung down a hairline spine in
+  the left gutter. A node is queued, pulses amber while its stage is on screen
+  and settles to a green tick once it is behind you; the spine fills green
+  behind you as you read.
+- The hero is a **deploy transcript** that plays itself with CSS alone — no
+  JavaScript, so it runs with scripting off — and ends on a live `uptime`.
+- The summary is restated as a **manifest**, generated from the same content
+  file the prose comes from, so the two cannot drift.
+- The stack is **four panels of the estate**, each splitting the handful of
+  tools that are owned end to end from the longer run of ones merely worked
+  with. Depth is the point of the section, so depth is what the layout shows.
+- A role **leads with its numbers**, then backs them with `+` additions in a
+  diff. Credentials are the **two-part shields** across the top of a README.
+- Contact is an **HTTP request**. It composes a `mailto:` — a static export has
+  no endpoint to POST to, which is why the panel says so.
+
+`⌘K` / `Ctrl-K` opens a command palette: jump to a stage, copy the address,
+open the résumé.
+
+The surface underneath is flat: opaque panels, hairline rules, near-square
+corners, JetBrains Mono for anything structural and Space Grotesk for prose. No
+drop shadows. Colour is semantic and sparing — amber is the operator's own
+signal and marks headings, actions and focus; green means passed; blue means
+merely informational; yellow means not finished yet. Nothing else is coloured.
+
+Everything is driven by the tokens in the one `:root` block at the top of
+`src/app/globals.css`, so a new palette means editing one block:
+
+| Token                      | Holds                                         |
+| -------------------------- | --------------------------------------------- |
+| `bg` / `surface` / `raise` | Page ground, panels on it, and hovered panels |
+| `fg` / `muted` / `faint`   | Text, in descending prominence                |
+| `line` / `line-2`          | Borders, resting and hovered                  |
+| `grid`                     | The backdrop lattice                          |
+| `accent` / `accent-ink`    | The operator's signal, and text on it         |
+| `ok` / `info` / `warn`     | Passed, informational, and pending            |
+| `grain` / `trace`          | Backdrop grain, and pointer-lattice strength  |
+| `r-panel` / `r-chip`       | Corner rounding                               |
+| `grid-size`                | Backdrop lattice pitch                        |
+
+`muted`, `faint`, `accent`, `ok`, `info` and `warn` all clear WCAG AA (4.5:1)
+against both `bg` and `surface`. Keep that true if you change them — `faint`
+carries every small uppercase label on the page and has the least headroom.
+
+The rail is laid out from two variables on `.pipeline`: `--gutter` is the left
+inset the stages sit at, and `--node` is the node's size. The spine is centred
+on half the node, so changing either keeps everything aligned.
+
+### Two things that will bite
+
+`html` uses `overflow-x: clip`, not `hidden`. `hidden` forces the used
+`overflow-y` to `auto`, which makes the root element a scroll container — and
+every `IntersectionObserver` on the page watches the implicit viewport root, so
+they all stop firing. The stage rail, the scroll reveals and the active nav
+link would go quietly dead.
+
+Each section reveals itself on an observer, which means a section that never
+gets its callback would sit at `opacity: 0` for good. `Section.tsx` starts a
+watchdog alongside the observer: an observer reports on its target as soon as
+it starts watching, so if nothing has arrived in 1.2s the reveal is abandoned
+and the content is shown. The writing is the point; the fade is an ornament.
 
 ## Deploying
 

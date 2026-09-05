@@ -1,10 +1,26 @@
 {
   "name": "Hariom Joshi",
   "role": "Cloud & Backend Engineer",
-  "tagline": "AWS · CloudFormation · Java · Spring Boot",
+  "tagline": "AWS · Infrastructure as Code · Java · Python",
+
+  "focus": [
+    "AWS",
+    "CloudFormation",
+    "ECS Fargate",
+    "Lambda",
+    "Docker",
+    "GitHub Actions",
+    "Python",
+    "Java 17"
+  ],
+
   "location": "Hyderabad, India",
+  "region": "ap-south-1",
   "url": "https://hariomjoshi.dev",
   "email": "hariomjoshi331@gmail.com",
+
+  "careerSince": "2023-07-01",
+  "experienceYears": "3 Years",
 
   "photo": null,
 
@@ -32,68 +48,93 @@
     }
   ],
 
-  "positioning": "Cloud and backend engineer with 2.8 years at Deloitte, owning the AWS infrastructure for a COBOL-mainframe-to-cloud modernisation programme at a Fortune 500 US investment management client. I own roughly 80% of the AWS resource estate across three environments — CloudFormation IaC, GitHub Actions CI/CD, ECS Fargate, Aurora, Redshift and DMS migrations — and build the Java 17 and Python services that replace the migrated mainframe workloads.",
+  "positioning": "I own the AWS estate behind a COBOL-mainframe-to-cloud modernisation programme for a Fortune 500 US investment management client. Roughly 80% of the resource footprint across dev, UAT and production is mine to define — CloudFormation stacks, ECS Fargate services, Aurora and Redshift, DMS migrations and the GitHub Actions pipelines that ship them — alongside the Java 17 and Python services replacing the batch workloads we migrate off the mainframe.",
 
-  "credentials": "700+ DSA problems solved · CodeChef 5★ · All India Rank 28 of 50,000+ in the PrepSAT Hackathon · AWS Certified Cloud Practitioner",
+  "philosophy": "Infrastructure goes into a template before it goes into an account. Anything built with a console click has to be rebuilt with a console click at 3am, so it gets written down, reviewed, and shipped through the same pipeline as the application code.",
+  "pipeline": {
+    "stages": [
+      {
+        "name": "code",
+        "command": "git commit -m \"settlement batch → fargate\"",
+        "result": "3 files"
+      },
+      {
+        "name": "build",
+        "command": "mvn -q clean package",
+        "result": "BUILD SUCCESS"
+      },
+      {
+        "name": "deploy",
+        "command": "aws ecs update-service --force-new-deployment",
+        "result": "stable"
+      }
+    ],
+    "result": "rollout complete · no downtime"
+  },
+
+  "credentials": [
+    { "label": "dsa.solved", "value": "700+" },
+    { "label": "codechef", "value": "4★" },
+    { "label": "prepsat.hackathon", "value": "AIR 28 / 50,000+" },
+    { "label": "aws.certified", "value": "Cloud Practitioner" },
+    { "label": "claude.certified", "value": "Developer" }
+  ],
 
   "stack": [
     {
       "label": "Cloud & Infrastructure",
       "items": [
-        { "name": "AWS", "weight": 3 },
-        { "name": "CloudFormation", "weight": 3 },
-        { "name": "ECS Fargate", "weight": 3 },
-        { "name": "Lambda", "weight": 2 },
-        { "name": "Step Functions", "weight": 2 },
-        { "name": "S3", "weight": 2 },
-        { "name": "IAM", "weight": 2 },
-        { "name": "KMS", "weight": 1 },
-        { "name": "VPC", "weight": 1 },
-        { "name": "AWS DMS", "weight": 2 },
-        { "name": "Storage Gateway", "weight": 1 },
-        { "name": "Secrets Manager", "weight": 1 }
-      ]
-    },
-    {
-      "label": "Data",
-      "items": [
-        { "name": "Aurora", "weight": 3 },
-        { "name": "Redshift", "weight": 2 },
-        { "name": "PostgreSQL", "weight": 2 },
-        { "name": "MySQL", "weight": 1 },
-        { "name": "DB2", "weight": 1 },
-        { "name": "Spring Data JPA", "weight": 1 }
-      ]
-    },
-    {
-      "label": "Languages",
-      "items": [
-        { "name": "Java 17", "weight": 3 },
-        { "name": "Python", "weight": 2 },
-        { "name": "SQL", "weight": 2 },
-        { "name": "Shell", "weight": 1 }
-      ]
-    },
-    {
-      "label": "Backend",
-      "items": [
-        { "name": "Spring Boot", "weight": 3 },
-        { "name": "REST APIs", "weight": 2 },
-        { "name": "Microservices", "weight": 2 },
-        { "name": "Maven", "weight": 1 },
-        { "name": "JUnit", "weight": 1 }
+        "AWS",
+        "CloudFormation",
+        "ECS Fargate",
+        "Lambda",
+        "Step Functions",
+        "S3",
+        "IAM",
+        "CloudWatch",
+        "AWS DMS",
+        "KMS",
+        "VPC",
+        "Storage Gateway",
+        "Secrets Manager",
+        "Glue"
       ]
     },
     {
       "label": "DevOps & Tooling",
       "items": [
-        { "name": "GitHub Actions", "weight": 3 },
-        { "name": "Docker", "weight": 2 },
-        { "name": "JFrog Artifactory", "weight": 1 },
-        { "name": "Bamboo", "weight": 1 },
-        { "name": "Splunk", "weight": 1 },
-        { "name": "Control-M", "weight": 1 },
-        { "name": "ServiceNow", "weight": 1 }
+        "GitHub Actions",
+        "Docker",
+        "Artifactory",
+        "Bamboo",
+        "Splunk",
+        "Control-M",
+        "ServiceNow"
+      ]
+    },
+    {
+      "label": "Data",
+      "items": [
+        "Aurora",
+        "Redshift",
+        "PostgreSQL",
+        "MySQL",
+        "DB2",
+        "Spring Data JPA"
+      ]
+    },
+    {
+      "label": "Languages & Backend",
+      "items": [
+        "Java 17",
+        "Spring Boot",
+        "Python",
+        "SQL",
+        "REST APIs",
+        "Microservices",
+        "Shell",
+        "Maven",
+        "JUnit"
       ]
     }
   ],
@@ -108,13 +149,11 @@
           "label": "GitHub",
           "href": "https://github.com/hariom331/spender-guardian-repo.mono",
           "kind": "github"
-        },
-        { "label": "Live demo", "href": "", "kind": "demo", "pending": true },
-        { "label": "Docs", "href": "", "kind": "docs", "pending": true }
+        }
       ]
     },
     {
-      "name": "Infant Emotion Detection",
+      "name": "infant-emotion-detection",
       "stack": ["Python", "CNN", "REST APIs"],
       "description": "Real-time emotion detection over audio and image input using a CNN, reaching 97% classification accuracy, with REST APIs triggering downstream actions on detected state.",
       "links": [
@@ -122,8 +161,7 @@
           "label": "GitHub",
           "href": "https://github.com/hariom331/infant-emotion-detection",
           "kind": "github"
-        },
-        { "label": "Write-up", "href": "", "kind": "writeup", "pending": true }
+        }
       ]
     }
   ],
@@ -133,12 +171,32 @@
       "company": "Deloitte",
       "title": "Software Engineer",
       "period": "Jan 2024 – Present",
+      "current": true,
       "location": "Hyderabad, India",
       "context": "Cloud modernisation programme for a Fortune 500 US investment management client — migrating COBOL mainframe batch workloads to Java and Python on AWS. 20-engineer engagement.",
+      "metrics": [
+        {
+          "value": "~80%",
+          "label": "of the AWS estate owned",
+          "note": "dev · uat · prod"
+        },
+        {
+          "value": "<2m",
+          "label": "EC2 provisioning time",
+          "note": "down from 15–20 min"
+        },
+        {
+          "value": "500K",
+          "label": "records per peak run",
+          "note": "nightly batch jobs"
+        }
+      ],
       "bullets": [
-        "Own ~80% of the AWS resource estate across dev, UAT and production — EC2, ECS Fargate, Lambda, S3, Aurora, Redshift, KMS, Secrets Manager, Step Functions and Storage Gateway.",
-        "Cut EC2 provisioning from 15–20 minutes to under 2 minutes by profiling and removing non-essential userdata bootstrap commands, shortening every job-execution cycle in the environment.",
-        "Migrated 5–6 COBOL mainframe modules to Java 17 / Spring Boot on ECS Fargate and Python on Lambda, supporting batch jobs that process 200,000–500,000 customer records per peak run."
+        "Own ~80% of the AWS resource estate across dev, UAT and production — EC2, ECS Fargate, Lambda, S3, Aurora, Redshift, KMS, Secrets Manager, Step Functions and EFS — including least-privilege IAM policies, secrets rotation, and the S3 lifecycle rules that brought spend down.",
+        "Cut EC2 provisioning from 15–20 minutes to under 2 minutes — around 90% — by profiling and removing non-essential userdata bootstrap commands, shortening every job-execution cycle in the environment.",
+        "Authored and maintain 15–20 CloudFormation stacks that provision the whole environment, and 30–40 GitHub Actions pipelines publishing build artifacts to JFrog Artifactory.",
+        "Built the Java 17 / Spring Boot services running on ECS Fargate and the Python services on Lambda behind batch jobs that process 200,000–500,000 customer records per peak run.",
+        "Delivered an AWS Storage Gateway file share end to end for controlled external access to S3 objects — ServiceNow change requests, Active Directory group provisioning, SailPoint role design and the network configuration behind it."
       ],
       "tech": [
         "AWS",
@@ -154,6 +212,19 @@
         "Python",
         "Docker"
       ]
+    },
+    {
+      "company": "Crystaltech Services Pvt. Ltd.",
+      "title": "Web Developer Intern",
+      "period": "Jan 2023 – Mar 2023",
+      "location": "Remote",
+      "context": "Internal tooling for candidate assessment — a browser extension and the cloud APIs behind it.",
+      "metrics": [],
+      "bullets": [
+        "Built a Chrome extension with React and Node.js that automated candidate monitoring, removing the manual proctoring effort it replaced.",
+        "Wrote the cloud interaction APIs behind it for real-time screen capture and secure storage."
+      ],
+      "tech": ["React", "Node.js", "REST APIs"]
     }
   ]
 }
