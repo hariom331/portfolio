@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { KeyboardEvent as ReactKeyboardEvent } from "react";
 
 import { site } from "@/content/site";
+import { saveResume } from "@/lib/resume";
 import { SECTIONS } from "@/lib/sections";
 
 const OPEN_EVENT = "cmdk:open";
@@ -70,13 +71,24 @@ function useCommands(close: () => void): readonly Command[] {
       }),
     });
 
+    // Two entries rather than one: the palette is where an action is named
+    // outright, so it states which of the two it is instead of opening the
+    // hero's dialog to ask a question the reader has already answered.
     if (resume) {
       commands.push({
-        id: "open-resume",
-        label: "open resume.pdf",
-        hint: "download",
-        keywords: "cv curriculum vitae",
+        id: "view-resume",
+        label: "view resume.pdf",
+        hint: "new tab",
+        keywords: "cv curriculum vitae open read",
         run: wrap(() => openTab(resume.href)),
+      });
+
+      commands.push({
+        id: "download-resume",
+        label: "download resume.pdf",
+        hint: "save",
+        keywords: "cv curriculum vitae save file",
+        run: wrap(() => saveResume(resume.href)),
       });
     }
 
@@ -217,13 +229,13 @@ export function CommandPalette() {
     <>
       {/* A click target for pointer users; keyboard users have Escape, which
           is why there is no role or handler on it. */}
-      <div className="cmdk-scrim" onClick={close} aria-hidden="true" />
+      <div className="scrim" onClick={close} aria-hidden="true" />
 
       <div
         role="dialog"
         aria-modal="true"
         aria-label="Command palette"
-        className="cmdk-panel"
+        className="dialog cmdk-panel"
         onKeyDown={onKeyDown}
       >
         <input
