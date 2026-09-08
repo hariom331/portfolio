@@ -1291,10 +1291,13 @@ body {
   }
 
   /* ========================================================================
-     Command palette
+     Overlays
+
+     The scrim and the panel every dialog on the page is cut from. A dialog
+     sets its own width and nothing else, so two of them cannot drift apart.
      ======================================================================== */
 
-  .cmdk-scrim {
+  .scrim {
     position: fixed;
     inset: 0;
     z-index: 60;
@@ -1303,13 +1306,12 @@ body {
     animation: fade-in 0.14s ease-out;
   }
 
-  .cmdk-panel {
+  .dialog {
     position: fixed;
     top: 12vh;
     left: 50%;
     z-index: 61;
     translate: -50% 0;
-    width: min(34rem, calc(100vw - 2rem));
     overflow: hidden;
     background: var(--surface);
     border: 1px solid var(--line-2);
@@ -1329,6 +1331,14 @@ body {
       opacity: 0;
       translate: -50% 8px;
     }
+  }
+
+  /* ========================================================================
+     Command palette
+     ======================================================================== */
+
+  .cmdk-panel {
+    width: min(34rem, calc(100vw - 2rem));
   }
 
   .cmdk-input {
@@ -1374,6 +1384,82 @@ body {
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--faint);
+  }
+
+  /* ========================================================================
+     Choice dialog
+
+     Two ways to take the same file, written as two rows of a menu rather
+     than two buttons in a row: the reader is picking, not confirming.
+     ======================================================================== */
+
+  .pick-panel {
+    width: min(23rem, calc(100vw - 2rem));
+  }
+
+  .pick-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    text-align: left;
+    color: var(--muted);
+    border-bottom: 1px solid var(--line);
+    transition:
+      color 0.18s ease,
+      background-color 0.18s ease;
+  }
+
+  .pick-item:hover,
+  .pick-item:focus-visible {
+    color: var(--fg);
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+    box-shadow: inset 2px 0 0 var(--accent);
+  }
+
+  /* The icon answers to the row, not to its own colour. */
+  .pick-item:hover svg,
+  .pick-item:focus-visible svg {
+    color: var(--accent);
+  }
+
+  .pick-name {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    letter-spacing: 0.02em;
+  }
+
+  .pick-note {
+    display: block;
+    margin-top: 0.15rem;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    color: var(--faint);
+    /* A long filename must not widen the dialog. */
+    overflow-wrap: anywhere;
+  }
+
+  .pick-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.6rem 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    color: var(--faint);
+  }
+
+  .pick-cancel {
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: color 0.18s ease;
+  }
+
+  .pick-cancel:hover {
+    color: var(--fg);
   }
 }
 

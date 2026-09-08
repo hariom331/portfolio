@@ -1,6 +1,7 @@
 import { BuildLoop } from "@/components/BuildLoop";
 import { CopyEmail } from "@/components/CopyEmail";
 import { LinkIcon } from "@/components/LinkIcon";
+import { ResumeAction } from "@/components/ResumeAction";
 import { site } from "@/content/site";
 import { anchorProps } from "@/lib/links";
 
@@ -75,16 +76,10 @@ export function Hero() {
           </ul>
 
           <div className="mt-8 flex flex-wrap items-center gap-2.5">
-            {resume ? (
-              <a
-                href={resume.href}
-                {...anchorProps(resume.href)}
-                className="btn btn-primary"
-              >
-                <LinkIcon kind="resume" />
-                resume.pdf
-              </a>
-            ) : null}
+            {/* Asks which way the reader wants the file before handing it
+                over — reading it here and keeping a copy are two different
+                errands, and the browser guesses wrong at one of them. */}
+            {resume ? <ResumeAction href={resume.href} /> : null}
 
             <CopyEmail />
 
