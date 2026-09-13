@@ -209,13 +209,18 @@
         "done": true
       },
       {
+        "label": "Least-privilege IAM",
+        "detail": "CI role policies + Lambda boundary",
+        "done": true
+      },
+      {
         "label": "Bootstrap Terraform",
-        "detail": "state bucket, OIDC provider, CI roles",
-        "done": false
+        "detail": "S3 state bucket, native locking",
+        "done": true
       },
       {
         "label": "idle-guard module",
-        "detail": "Lambda, DynamoDB, EventBridge, SES, IAM",
+        "detail": "Lambda, DynamoDB, EventBridge, SQS, SES, SSM",
         "done": false
       },
       {
@@ -226,11 +231,6 @@
       {
         "label": "Plan / apply workflows",
         "detail": "apply approval-gated on main",
-        "done": false
-      },
-      {
-        "label": "Test suite",
-        "detail": "pytest + moto, no live account",
         "done": false
       },
       {

@@ -1180,11 +1180,66 @@ body {
   /* ========================================================================
      Flagship
 
-     The project still on the bench. Its lifecycle is drawn as the ladder a
+     The project still on the bench. On the page it is a card like the others
+     with its build plan read off as one bar; the design behind it sits in a
+     fold under the card. Inside, its lifecycle is drawn as the ladder a
      resource actually climbs, and its build plan as a job list with the
      unfinished rows left showing. Static on purpose: the page already has one
      loop that runs, and a second would compete with it rather than add to it.
      ======================================================================== */
+
+  /* The foot strip a card folds its detail behind, cut to match the head
+     strip so the card reads as bracketed top and bottom. A CI log folds a
+     step the same way: one line, closed by default. */
+  .fold > summary {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.55rem 0.9rem;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    list-style: none;
+    cursor: pointer;
+    background: color-mix(in srgb, var(--fg) 3%, transparent);
+    border-top: 1px solid var(--line);
+    transition:
+      color 0.18s ease,
+      background-color 0.18s ease;
+  }
+
+  /* Safari still draws its own triangle unless told not to. */
+  .fold > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .fold > summary:hover {
+    color: var(--fg);
+    background: color-mix(in srgb, var(--fg) 5%, transparent);
+  }
+
+  /* Inset, because the card clips its overflow and an outset ring would lose
+     its bottom edge. */
+  .fold > summary:focus-visible {
+    outline-offset: -2px;
+  }
+
+  .fold[open] > summary {
+    border-bottom: 1px solid var(--line);
+  }
+
+  /* inline-block, since a transform does nothing to a plain inline box. */
+  .fold-caret {
+    display: inline-block;
+    color: var(--accent);
+    transition: rotate 0.18s ease;
+  }
+
+  .fold[open] .fold-caret {
+    rotate: 90deg;
+  }
 
   /* Stacked on a phone, one rung per column from sm up. Auto columns rather
      than a fixed three, so a step added to the content file takes a column of
