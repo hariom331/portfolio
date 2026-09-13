@@ -39,6 +39,41 @@ export interface Project {
   readonly links: readonly ExternalLink[];
 }
 
+// The project on the bench right now. It gets the full width and the parts a
+// finished project would not need: the design argued for up front, and the
+// build plan published as it stands rather than as it will.
+export interface FlagshipProject extends Project {
+  // The one rule every design decision answers to, stated once.
+  readonly principle: string;
+  readonly metrics: readonly Metric[];
+  readonly lifecycle: Lifecycle;
+  readonly decisions: readonly string[];
+  // In build order. Whether the card reads "building" or "shipped" is derived
+  // from these rather than set by hand, so the badge can never claim more than
+  // the list underneath it does.
+  readonly milestones: readonly Milestone[];
+}
+
+// The countdown a resource walks before anything is done to it.
+export interface Lifecycle {
+  readonly steps: readonly LifecycleStep[];
+  // What sends a resource back to the start, printed under the steps.
+  readonly note: string;
+}
+
+export interface LifecycleStep {
+  // Elapsed time since the resource was first found idle, as "T+30m".
+  readonly at: string;
+  readonly state: string;
+  readonly action: string;
+}
+
+export interface Milestone {
+  readonly label: string;
+  readonly detail: string;
+  readonly done: boolean;
+}
+
 // Every entry renders the same. There is no prominence field, because a tier
 // list of your own skills reads as a list of the ones you are apologising for.
 export interface StackGroup {
@@ -117,6 +152,9 @@ export interface SiteContent {
   readonly pipeline: Pipeline;
   readonly credentials: readonly Credential[];
   readonly stack: readonly StackGroup[];
+  // Leads the Projects section, ahead of the grid. null leaves the section as
+  // the grid alone.
+  readonly flagship: FlagshipProject | null;
   readonly projects: readonly Project[];
   readonly experience: readonly Role[];
 }
