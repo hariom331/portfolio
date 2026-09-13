@@ -139,6 +139,115 @@
     }
   ],
 
+  "flagship": {
+    "name": "aws-idle-resource-manager",
+    "stack": [
+      "Terraform",
+      "Python",
+      "Lambda",
+      "EventBridge",
+      "DynamoDB",
+      "CloudWatch",
+      "SES",
+      "GitHub Actions",
+      "OIDC"
+    ],
+    "description": "Non-production AWS gets left running after the work ends, and nobody sees it until the bill does. Fixed start/stop schedules either stop something in use or save nothing, so this measures instead: every 30 minutes a Lambda reads real CloudWatch usage for each managed EC2 instance, Aurora cluster and RDS instance, warns the owner twice, and stops whatever is still idle. Terraform end to end, shipped through GitHub Actions over OIDC — no static AWS keys anywhere.",
+    "principle": "Every choice prefers missing an idle resource over stopping a busy one.",
+    "metrics": [
+      {
+        "value": "$145",
+        "label": "one forgotten m5.xlarge",
+        "note": "per month, left running"
+      },
+      {
+        "value": "<$1",
+        "label": "to run the guard",
+        "note": "per month · 6 resources, est."
+      },
+      {
+        "value": "0",
+        "label": "static AWS keys",
+        "note": "OIDC · short-lived creds"
+      }
+    ],
+    "lifecycle": {
+      "steps": [
+        {
+          "at": "T+0",
+          "state": "WARNED_1",
+          "action": "Idle on every signal. First warning to the owner."
+        },
+        {
+          "at": "T+30m",
+          "state": "WARNED_2",
+          "action": "Still idle. Urgent warning."
+        },
+        {
+          "at": "T+60m",
+          "state": "STOPPED",
+          "action": "Still idle. Stopped once dry run is off — never terminated."
+        }
+      ],
+      "note": "Any activity on a later tick deletes the state row and the countdown starts over. Bringing a stopped resource back is always a human action."
+    },
+    "decisions": [
+      "Missing metrics count as unknown, never as zero. A metric that isn't publishing comes back empty, and reading that as 0 is the likeliest way to stop a healthy database.",
+      "Signals combine with AND, not OR. A jump host sits at 2% CPU while in use; a runaway process sits at 90% doing nothing.",
+      "The Lambda's IAM policy names every managed ARN, so a logic bug can't reach anything else — and GitHub Actions only deploys, holding no permission to stop a thing.",
+      "EventBridge delivers at least once, so reserved concurrency of 1 and a conditional write on status_since turn a duplicate tick into a no-op."
+    ],
+    "milestones": [
+      {
+        "label": "Design document",
+        "detail": "flow, data model, IAM, rollout, runbook",
+        "done": true
+      },
+      {
+        "label": "GitHub → AWS OIDC",
+        "detail": "trust verified from CI",
+        "done": true
+      },
+      {
+        "label": "Bootstrap Terraform",
+        "detail": "state bucket, OIDC provider, CI roles",
+        "done": false
+      },
+      {
+        "label": "idle-guard module",
+        "detail": "Lambda, DynamoDB, EventBridge, SES, IAM",
+        "done": false
+      },
+      {
+        "label": "Evaluator + handlers",
+        "detail": "EC2 · RDS · Aurora",
+        "done": false
+      },
+      {
+        "label": "Plan / apply workflows",
+        "detail": "apply approval-gated on main",
+        "done": false
+      },
+      {
+        "label": "Test suite",
+        "detail": "pytest + moto, no live account",
+        "done": false
+      },
+      {
+        "label": "Dry-run week",
+        "detail": "thresholds from real logs, then enforce",
+        "done": false
+      }
+    ],
+    "links": [
+      {
+        "label": "GitHub",
+        "href": "https://github.com/hariom331/aws-idle-resource-manager",
+        "kind": "github"
+      }
+    ]
+  },
+
   "projects": [
     {
       "name": "spender-guardian",

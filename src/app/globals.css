@@ -941,6 +941,13 @@ body {
     }
   }
 
+  /* The same breath in the colour kept for unfinished work: running, but not
+     done yet. */
+  .live-dot-warn,
+  .live-dot-warn::after {
+    background: var(--warn);
+  }
+
   /* ========================================================================
      Build badges
 
@@ -1168,6 +1175,87 @@ body {
 
   .yaml-c {
     color: var(--faint);
+  }
+
+  /* ========================================================================
+     Flagship
+
+     The project still on the bench. Its lifecycle is drawn as the ladder a
+     resource actually climbs, and its build plan as a job list with the
+     unfinished rows left showing. Static on purpose: the page already has one
+     loop that runs, and a second would compete with it rather than add to it.
+     ======================================================================== */
+
+  /* Stacked on a phone, one rung per column from sm up. Auto columns rather
+     than a fixed three, so a step added to the content file takes a column of
+     its own instead of wrapping under the first. */
+  .ladder {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  @media (min-width: 640px) {
+    .ladder {
+      grid-auto-columns: minmax(0, 1fr);
+      grid-auto-flow: column;
+    }
+  }
+
+  /* A tile with a coloured rule across its top: the unfinished colour while
+     the owner is still being warned, accent on the rung where the guard acts.
+     Drawn inset rather than as a heavier top border, so the frame keeps one
+     weight all the way round. */
+  .rung {
+    --rung: var(--warn);
+    padding: 0.8rem 0.85rem 0.9rem;
+    background: color-mix(in srgb, var(--surface) 70%, transparent);
+    border: 1px solid var(--line);
+    border-radius: var(--r-panel);
+    box-shadow: inset 0 2px 0 var(--rung);
+  }
+
+  .rung:last-child {
+    --rung: var(--accent);
+  }
+
+  .rung-state {
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: var(--rung);
+  }
+
+  /* One row per milestone: its mark, what it is, where it stands. */
+  .plan-row {
+    display: grid;
+    grid-template-columns: 0.9rem minmax(0, 1fr) auto;
+    align-items: baseline;
+    gap: 0.6rem;
+    padding: 0.6rem 0.9rem;
+    font-family: var(--font-mono);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .plan-row:last-child {
+    border-bottom: 0;
+  }
+
+  /* The row the work is on, marked the way the command palette marks its
+     active entry. */
+  .plan-next {
+    background: color-mix(in srgb, var(--warn) 6%, transparent);
+    box-shadow: inset 2px 0 0 var(--warn);
+  }
+
+  .plan-mark {
+    font-size: 0.75rem;
+    text-align: center;
+  }
+
+  .plan-word {
+    font-size: 0.625rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
   }
 
   /* ========================================================================

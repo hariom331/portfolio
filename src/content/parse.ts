@@ -5,8 +5,12 @@
 import type {
   Credential,
   ExternalLink,
+  FlagshipProject,
+  Lifecycle,
+  LifecycleStep,
   LinkKind,
   Metric,
+  Milestone,
   Photo,
   Pipeline,
   PipelineStage,
@@ -159,6 +163,46 @@ function project(value: unknown, path: string): Project {
   };
 }
 
+function lifecycleStep(value: unknown, path: string): LifecycleStep {
+  const f = fields(value, path);
+  return {
+    at: str(f.at, `${path}.at`),
+    state: str(f.state, `${path}.state`),
+    action: str(f.action, `${path}.action`),
+  };
+}
+
+function lifecycle(value: unknown, path: string): Lifecycle {
+  const f = fields(value, path);
+  return {
+    steps: list(f.steps, `${path}.steps`, lifecycleStep),
+    note: str(f.note, `${path}.note`),
+  };
+}
+
+function milestone(value: unknown, path: string): Milestone {
+  const f = fields(value, path);
+  return {
+    label: str(f.label, `${path}.label`),
+    detail: str(f.detail, `${path}.detail`),
+    done: bool(f.done, `${path}.done`),
+  };
+}
+
+function flagship(value: unknown, path: string): FlagshipProject | null {
+  if (value === null) return null;
+  if (value === undefined) fail(path, "an object or null", value);
+  const f = fields(value, path);
+  return {
+    ...project(value, path),
+    principle: str(f.principle, `${path}.principle`),
+    metrics: list(f.metrics, `${path}.metrics`, metric),
+    lifecycle: lifecycle(f.lifecycle, `${path}.lifecycle`),
+    decisions: list(f.decisions, `${path}.decisions`, str),
+    milestones: list(f.milestones, `${path}.milestones`, milestone),
+  };
+}
+
 function role(value: unknown, path: string): Role {
   const f = fields(value, path);
   return {
@@ -206,6 +250,7 @@ export function parseSiteContent(value: unknown): SiteContent {
     pipeline: pipeline(f.pipeline, "pipeline"),
     credentials: list(f.credentials, "credentials", credential),
     stack: list(f.stack, "stack", stackGroup),
+    flagship: flagship(f.flagship, "flagship"),
     projects: list(f.projects, "projects", project),
     experience: list(f.experience, "experience", role),
   };

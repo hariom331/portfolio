@@ -1,5 +1,6 @@
 import { Lit } from "@/components/Lit";
 import { Section } from "@/components/Section";
+import { StatGrid } from "@/components/StatGrid";
 import { site } from "@/content/site";
 
 export function Experience() {
@@ -35,26 +36,7 @@ export function Experience() {
 
               {/* The numbers a recruiter is scanning for, on the role that
                   earned them. */}
-              {role.metrics.length > 0 ? (
-                <dl className="stat-grid mt-6">
-                  {role.metrics.map((metric) => (
-                    // The number leads visually, but the label is still the
-                    // term the value describes, so the order is swapped in CSS
-                    // rather than in the markup.
-                    <div key={metric.label} className="stat flex flex-col">
-                      <dt className="order-2 mt-3">
-                        <span className="text-fg block text-[0.8125rem] leading-snug font-medium">
-                          {metric.label}
-                        </span>
-                        <span className="text-faint mt-1 block font-mono text-[0.6875rem]">
-                          {metric.note}
-                        </span>
-                      </dt>
-                      <dd className="stat-value order-1">{metric.value}</dd>
-                    </div>
-                  ))}
-                </dl>
-              ) : null}
+              <StatGrid metrics={role.metrics} className="mt-6" />
 
               <ul className="mt-7 -ml-1 space-y-0.5">
                 {role.bullets.map((bullet) => (
